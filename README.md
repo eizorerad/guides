@@ -1,4 +1,21 @@
-# guides
+<p align="center">
+  <a href="https://github.com/eizorerad/guides/releases/latest">
+    <img src="https://img.shields.io/github/v/release/eizorerad/guides?style=for-the-badge&amp;label=release&amp;labelColor=303533&amp;color=438f83" alt="Latest release">
+  </a>
+  <a href="https://github.com/eizorerad/guides/actions/workflows/reproduce.yml?query=branch%3Amain">
+    <img src="https://img.shields.io/github/actions/workflow/status/eizorerad/guides/reproduce.yml?branch=main&amp;style=for-the-badge&amp;label=Reproduce&amp;labelColor=303533" alt="Reproduce workflow status on main">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/code-MIT-c2783e?style=for-the-badge&amp;labelColor=303533" alt="Code license: MIT">
+  </a>
+  <a href="pixi.toml">
+    <img src="https://img.shields.io/badge/platform-Linux%20x86--64-626c68?style=for-the-badge&amp;labelColor=303533" alt="Supported platform: Linux x86-64">
+  </a>
+</p>
+
+<p align="center">
+  <img src="docs/assets/guides-banner.png" width="100%" alt="guides — Explore the context of CRISPRi guides. GRCh38 · K562. Decorative illustration of a genomic locus map.">
+</p>
 
 A small terminal program that places published or user-supplied CRISPRi guides
 on a human GRCh38 locus and generates a Quarto report of their K562 regulatory
