@@ -8,6 +8,12 @@ and figure design: **CC BY 4.0**, copyright 2026 Leonid Klarov
 ([license](https://creativecommons.org/licenses/by/4.0/)). Source-derived
 sequences and annotations retain the terms of their providers below.
 
+The [README banner](assets/guides-banner.png) was supplied by the project
+maintainer and is included under the documentation license. It is decorative
+artwork; scientific locus plots are computed separately when the report renders.
+Badge images are served by Shields.io, with release and workflow status from
+GitHub.
+
 The scientific idea develops the locus-annotation component of the author's
 CBIO7102 **One gene, four guides** coursework. The Python implementation was
 written for this standalone project; no unlicensed upstream Python module was
