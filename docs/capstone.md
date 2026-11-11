@@ -20,9 +20,11 @@ The user requested **local commits only**. Consequently a GitHub repository,
 actual pull requests, a GitHub Release and a green hosted Reproduce Action
 are not claimed. A local branch merge is not a pull request.
 
-Before submitting, publish the chosen repository version to GitHub (private
-is allowed), share it with the instructor and partner as needed, run the
-workflow on the release and have the partner reproduce from the README.
+Before submitting, publish the repository to GitHub (private is allowed),
+open a real pull request from `feature/terminal-reports` into `main`, and review
+and merge it there. Share the repository with the instructor and partner as
+needed, publish the release, run the workflow on that version and have the
+partner reproduce from the README.
 The partner should file their own reproduce report; this project does not
 fabricate one. Future changes can be reviewed through real pull requests.
 A Zenodo DOI and a container image are optional for this capstone.
