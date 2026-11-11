@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import sys
+from contextlib import redirect_stdout
 from pathlib import Path
 
 import requests
@@ -63,26 +64,57 @@ def menu():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Map CRISPRi guides onto a GRCh38 locus with K562 peak annotations.")
+    parser = argparse.ArgumentParser(
+        prog="guides",
+        description="Map CRISPRi guides onto a human GRCh38 locus with K562 peak annotations.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""Examples:
+  guides                                      Open the terminal menu
+  guides help                                 Show this help (also --help or -h)
+  guides --gene COTL1                          Report using Dolcetto Set A guides
+  guides --gene COTL1 --guides GGTACGCGCCGAGGGCGCAC CGGCGGTGGCGACGGCTACG
+  guides --gene COTL1 --guides-file spacers.txt  Read one spacer per line
+  guides --gene COTL1 --json                    Return result paths as JSON
+
+Spacers: 20 DNA bases (A/C/G/T), without PAM. All report commands run without
+prompts. With --json, progress goes to stderr and stdout contains only JSON.
+Exit codes: 0 success, 1 report/input failure, 2 invalid command, 130 interrupted.
+Reports for the same gene and mode are replaced on rerun; run one at a time.""")
     parser.add_argument("--gene", help="Exact gene symbol or Ensembl ID")
-    parser.add_argument("--guides-file", type=Path, help="One 20-nt DNA spacer per line, without PAM")
-    parser.add_argument("--reproduce", action="store_true", help="Render the example specified in config/settings.toml")
-    parser.add_argument("--download", action="store_true", help="Download the example's raw inputs only")
-    args = parser.parse_args()
-    if args.guides_file and not args.gene:
-        parser.error("--guides-file requires --gene")
+    inputs = parser.add_mutually_exclusive_group()
+    inputs.add_argument("--guides", nargs="+", metavar="SPACER", help="Custom spacers, separated by spaces; requires --gene")
+    inputs.add_argument("--guides-file", type=Path, metavar="FILE", help="One spacer per line; requires --gene")
+    actions = parser.add_mutually_exclusive_group()
+    actions.add_argument("--reproduce", action="store_true", help="Render the example specified in config/settings.toml")
+    actions.add_argument("--download", action="store_true", help="Download raw inputs for --gene or the example")
+    parser.add_argument("--json", action="store_true", help="Print report and results paths as JSON for scripts")
+    argv = sys.argv[1:]
+    args = parser.parse_args(["--help"] if argv == ["help"] else argv)
+    if (args.guides_file or args.guides) and not args.gene:
+        parser.error("custom guides require --gene")
+    if args.download and (args.guides_file or args.guides or args.json):
+        parser.error("--download cannot be combined with custom guides or --json")
+    if args.json and not (args.gene or args.reproduce):
+        parser.error("--json requires --gene or --reproduce")
     try:
         if args.download:
             prepare(args.gene or SETTINGS["demo_gene"])
         elif args.reproduce or args.gene:
-            sequences = args.guides_file.read_text().splitlines() if args.guides_file else None
-            render(args.gene or SETTINGS["demo_gene"], sequences)
+            sequences = args.guides_file.read_text().splitlines() if args.guides_file else args.guides
+            with redirect_stdout(sys.stderr if args.json else sys.stdout):
+                report = render(args.gene or SETTINGS["demo_gene"], sequences)
+            if args.json:
+                print(json.dumps(dict(report=str(report), results=str(ROOT / "results" / report.stem))))
         else:
+            if not sys.stdin.isatty():
+                parser.error("use --gene or --reproduce for non-interactive runs; see guides help")
             menu()
     except (ValueError, OSError, requests.RequestException, subprocess.CalledProcessError) as error:
         parser.exit(1, f"guides: {error}\n")
-    except (EOFError, KeyboardInterrupt):
+    except EOFError:
         print("\nGoodbye.")
+    except KeyboardInterrupt:
+        parser.exit(130, "\nInterrupted.\n")
 
 
 if __name__ == "__main__":

@@ -68,5 +68,21 @@ matches the baseline above: the figure update did not change measurements.
 The earlier clean-clone run documents v0.1.0; these are the incremental checks
 for the v0.1.1 update.
 
+## v0.1.2: help and unattended commands
+
+`guides help`, `guides --help` and `guides -h` returned identical help with
+exit code 0. The installed launcher was exercised from outside the repository.
+With standard input at EOF, both a Dolcetto report and an inline custom-guide
+report completed successfully using `--json`. Their stdout parsed as one JSON
+object containing existing absolute report/results paths; progress was on
+stderr. Both reports recorded software version 0.1.2.
+
+Missing arguments in an unattended run, custom guides without a gene,
+conflicting input options and incompatible download options returned exit 2
+without prompting. An invalid spacer returned exit 1 with empty stdout.
+The interactive menu was separately opened in a terminal and exited with 0.
+`pixi install --locked` passed; the demo measurements retained the baseline
+`guides.csv` SHA-256 above. No analysis or plotting code changed in this update.
+
 A local verification does not substitute for the hosted Reproduce Action or
 an independent partner report required by the capstone.

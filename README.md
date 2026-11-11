@@ -78,12 +78,50 @@ The download URLs, releases, checksums and terms are fixed in
 [checksums.md5](metadata/checksums.md5). All scientific counts, tables and
 figures are recomputed by [report.qmd](reports/report.qmd).
 
+## Help and automatic reports
+
+With the launcher installed, these commands work from any directory:
+
+```bash
+guides help
+guides --gene COTL1
+guides --gene COTL1 --guides GGTACGCGCCGAGGGCGCAC CGGCGGTGGCGACGGCTACG
+guides --gene COTL1 --guides-file /absolute/path/to/spacers.txt
+guides --gene COTL1 --json > report.json
+```
+
+`guides help`, `guides --help` and `guides -h` show the same help. Passing
+`--gene` or `--reproduce` builds a report without opening the menu. Custom
+spacers can be supplied with either `--guides` or `--guides-file`, and require
+`--gene`. The file path is resolved from the caller's working directory.
+
+For another program, add `--json` to a report command, including custom-guide
+commands. Standard output contains one JSON object with absolute `report`
+and `results` paths; progress messages go to standard error. Exit code 0 means
+success, 1 a report/input failure, 2 an invalid command and 130 an interruption.
+An automated invocation with no arguments exits with an error instead of
+waiting for menu input. A valid report can contain not-found or ambiguous
+guides; inspect `guides.csv` to distinguish these scientific outcomes.
+
+For example, in Python:
+
+```python
+import json
+import subprocess
+
+run = subprocess.run(["guides", "--gene", "COTL1", "--json"],
+                     check=True, capture_output=True, text=True)
+paths = json.loads(run.stdout)
+print(paths["report"])
+```
+
 ## Other commands
 
 Run these from the repository directory:
 
 ```bash
 pixi run guides                                  # interactive menu
+pixi run guides help                             # help and examples
 pixi run guides --gene COTL1                      # published guides
 pixi run guides --gene COTL1 --guides-file /absolute/path/to/spacers.txt
 pixi run download                                # download demo inputs
@@ -149,7 +187,7 @@ MIT notice for the course's Reproduce workflow.
 ## How to cite
 
 Klarov, Leonid (2026). *guides: reproducible CRISPRi guide context in K562*,
-version 0.1.1. Machine-readable metadata: [CITATION.cff](CITATION.cff).
+version 0.1.2. Machine-readable metadata: [CITATION.cff](CITATION.cff).
 Also cite the original datasets and publications listed in each report:
 Sanson et al. (2018), [doi:10.1038/s41467-018-07901-8](https://doi.org/10.1038/s41467-018-07901-8);
 Frankish et al. (2019), [doi:10.1093/nar/gky955](https://doi.org/10.1093/nar/gky955);
