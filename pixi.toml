@@ -1,0 +1,27 @@
+[workspace]
+name = "guides"
+version = "0.1.0"
+description = "A small terminal tool for CRISPRi guide context in K562"
+authors = ["Leonid Klarov <leonid.klarov@gmail.com>"]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = "3.12.*"
+pandas = "2.3.*"
+matplotlib-base = "3.10.*"
+quarto = "1.9.*"
+jupyter = ">=1.1,<2"
+tabulate = ">=0.9,<1"
+openpyxl = ">=3.1,<4"
+requests = ">=2.32,<3"
+pip = ">=25,<27"
+
+[pypi-dependencies]
+guides = { path = ".", editable = true }
+
+[tasks]
+guides = "python -m guides"
+reproduce = "python -m guides --reproduce"
+test = "python -m unittest discover -s tests -v"
+

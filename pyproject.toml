@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "guides"
+version = "0.1.0"
+description = "Reproducible maps of CRISPRi guides and K562 regulatory context"
+requires-python = ">=3.12"
+authors = [{ name = "Leonid Klarov", email = "leonid.klarov@gmail.com" }]
+license = "MIT"
+
+[project.scripts]
+guides = "guides.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
