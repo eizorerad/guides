@@ -1,6 +1,6 @@
 [workspace]
 name = "guides"
-version = "0.1.3"
+version = "0.2.0"
 description = "A small terminal tool for CRISPRi guide context in K562"
 authors = ["Leonid Klarov <leonid.klarov@gmail.com>"]
 channels = ["conda-forge"]
@@ -17,6 +17,7 @@ requests = ">=2.32,<3"
 
 [pypi-dependencies]
 guides = { path = ".", editable = true }
+pybigwig = ">=0.3.29, <0.4"
 
 [tasks]
 guides = "python -m guides"

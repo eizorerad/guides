@@ -3,6 +3,7 @@
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 
@@ -15,8 +16,8 @@ def locus_figure(result):
     origin = min(result["tss"], key=lambda t: abs(t - centre))
     direction = 1 if gene["strand"] == "+" else -1
     colours = ["tab:blue", "tab:red", "tab:green", "tab:purple"]
-    fig, axes = plt.subplots(5, 1, sharex=True, figsize=(9.5, 5.5 + count * 0.35),
-                             gridspec_kw={"height_ratios": [1, 1, 1, 1, 1.3 + count * 0.55]},
+    fig, axes = plt.subplots(6, 1, sharex=True, figsize=(9.5, 6.2 + count * 0.35),
+                             gridspec_kw={"height_ratios": [1, 1, 1, 1, 0.8, 1.3 + count * 0.55]},
                              layout="constrained")
     promoters = [(max(left, a), min(right, b) - max(left, a)) for a, b in result["promoters"]
                  if a < right and b > left]
@@ -39,6 +40,19 @@ def locus_figure(result):
                     ha="center", va="center", color="0.45", fontsize=8)
         ax.set(ylabel=f"K562 {key}\ncalled peaks", ylim=(0, 1))
         ax.yaxis.label.set_size(8)
+    ccres = result["ccres"]
+    ccres = ccres[(ccres.start < right) & (ccres.end > left)]
+    palette = {"Promoter": "#ff0000", "Proximal enhancer": "#ffa700", "Distal enhancer": "#ffcd00"}
+    intervals = [(max(left, r.start), min(right, r.end) - max(left, r.start)) for r in ccres.itertuples()]
+    axes[4].broken_barh(intervals, (0.08, 0.45),
+                        facecolors=[palette.get(c, "#808080") for c in ccres.cCRE_class])
+    handles = [Patch(facecolor=colour, label=f"{name}-like") for name, colour in palette.items()]
+    handles.append(Patch(facecolor="#808080", label="Other / low DNase"))
+    axes[4].legend(handles=handles, loc="upper center", ncol=4, fontsize=6.5, frameon=False)
+    axes[4].set(ylabel="ENCODE4\nK562 cCREs", ylim=(0, 1.5))
+    axes[4].yaxis.label.set_size(8)
+    if ccres.empty:
+        axes[4].text(0.5, 0.25, "No cCREs in this view", transform=axes[4].transAxes, ha="center", fontsize=8)
     ax = axes[-1]
     ax.broken_barh(promoters, (count + 1.05, 0.22), facecolors="0.75")
     ax.text(0.01, count + 1.16, "Configured TSS windows", transform=ax.get_yaxis_transform(),

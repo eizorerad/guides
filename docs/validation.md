@@ -109,5 +109,39 @@ the corrected descriptions; the new figure was visually inspected and the
 demo measurements retained the baseline `guides.csv` SHA-256. This update
 clarifies the existing data; it does not add a promoter/enhancer classifier.
 
+## v0.2.0: ENCODE4 K562 cCREs
+
+The K562 Core Collection BigBed was downloaded from UCSC (93,066,846 bytes,
+MD5 `18769a678376a2a04b73e851f6ee6d53`). The locked environment adds
+pyBigWig 0.3.29 to read local intervals. The demo's eight raw inputs total
+152,249,617 bytes (145.2 MiB). The Python implementation grew by 38 lines net;
+source metadata, report explanations and documentation account for the rest.
+
+The four COTL1 elements were independently compared with the
+[UCSC track API](https://api.genome.ucsc.edu/getData/track?genome=hg38;track=ENCFF414OGC_ENCFF806YEZ_ENCFF849TDM_ENCFF736UDR;chrom=chr16;start=84617483;end=84618539).
+IDs, source classes and full 0-based half-open boundaries agree exactly:
+
+| Element | Start | End | Source class |
+| --- | ---: | ---: | --- |
+| EH38E4150991 | 84617355 | 84617556 | Proximal enhancer |
+| EH38E3195315 | 84617621 | 84617846 | Proximal enhancer |
+| EH38E3195316 | 84618006 | 84618355 | Promoter |
+| EH38E1833371 | 84618434 | 84618662 | Proximal enhancer |
+
+Independent base-set intersections give promoter-like overlaps of 0, 23 and
+9 bp for g1–g3, and zero enhancer-like overlap. g1 touches the promoter
+boundary but shares no bases. All pre-existing `guides.csv` columns match
+the v0.1.3 baseline. Empty-region, boundary-touching, absent-chromosome and
+beyond-chromosome BigBed queries returned empty tables. The six existing
+coordinate tests passed.
+
+The demo and the workspace's saved two-guide custom request rendered
+successfully. The installed launcher ran from `/tmp` with `--json` and stdin
+at EOF; stdout was pure JSON with existing absolute output paths and progress
+was on stderr. The custom request was preserved. Both HTML reports contain
+the cCRE tables with correctly converted 1-based coordinates, source links,
+an embedded figure and software version 0.2.0. The new demo PNG was visually
+inspected: the separate cCRE track and its legend do not overlap other panels.
+
 A local verification does not substitute for the hosted Reproduce Action or
 an independent partner report required by the capstone.

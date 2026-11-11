@@ -209,6 +209,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/widgetsnbextension-4.0.16-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-4.1.2-pyh5ded981_0.conda
       - pypi: ./
+      - pypi: https://files.pythonhosted.org/packages/31/9e/ba2dc70e79af10cb55965227193b7ea3b1f3691b8d1e547cdce68fa8c841/pybigwig-0.3.29-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
 packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
   build_number: 20
@@ -3176,3 +3177,8 @@ packages:
 - pypi: ./
   name: guides
   requires_python: '>=3.12'
+- pypi: https://files.pythonhosted.org/packages/31/9e/ba2dc70e79af10cb55965227193b7ea3b1f3691b8d1e547cdce68fa8c841/pybigwig-0.3.29-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+  name: pybigwig
+  version: 0.3.29
+  sha256: fb664bcaea45128ddae8f20fabfd59bf01e01db714512ce6bcc7df556d3175d2
+  requires_python: '>=3.9'

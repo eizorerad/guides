@@ -7,16 +7,20 @@ context. Author: Leonid Klarov <leonid.klarov@gmail.com>.
 This CBIO7501 capstone develops the locus-annotation part of my CBIO7102
 **One gene, four guides** coursework. The research question is: **how does local
 regulatory context differ between guides targeting the same gene?** The report
-compares configured windows around annotated transcription start sites (TSSs)
-and DNase, H3K4me3, H3K27ac and CTCF peaks.
+compares configured windows around annotated transcription start sites (TSSs),
+DNase, H3K4me3, H3K27ac and CTCF peaks, and ENCODE4 candidate cis-regulatory
+elements (cCREs).
 
 The first version supports human **GRCh38, K562, SpCas9/NGG and CRISPRi**.
 It retrieves existing guides from **Dolcetto Set A**; it does not design or
 rank new guides. It is a descriptive analysis, not an efficacy or genome-wide
 off-target predictor. Only called peak intervals are drawn, not signal heights.
 The grey TSS-window strip is defined by distance from transcript starts, not
-experimental promoter boundaries. No promoter-like or enhancer-like ENCODE
-cCRE annotation is loaded; H3K27ac peaks are not labelled as enhancers.
+experimental promoter boundaries. A separate ENCODE4 K562 cCRE track shows
+promoter-like (red), proximal enhancer-like (orange) and distal enhancer-like
+(yellow) elements. Other classes, including Low-DNase, are grey. These are
+published candidate signatures; proximity does not establish which gene an
+enhancer regulates. H3K27ac peaks alone are not labelled as enhancers.
 
 ## Start here
 
@@ -49,7 +53,8 @@ gene; this program does not pad it to four.
 Hardware/platform: Linux x86-64, an ordinary CPU, no GPU or cluster account.
 Allow 4 GB RAM and 4 GB free disk space for installation, caches and the demo.
 The installed environment occupies about 0.7 GB; the demo raw inputs occupy
-about 56 MB. Internet access is needed for the first installation and downloads.
+about 152 MB (145 MiB), including the 93 MB K562 cCRE file. Internet access is
+needed for the first installation and downloads.
 Later runs reuse checksum-verified local files. Selecting another chromosome
 downloads its compressed FASTA too. Other operating systems are not in the lock.
 
@@ -147,6 +152,7 @@ For each gene and mode (`dolcetto` or `custom`):
 | `results/GENE-mode/locus.png` and `.svg` | Locus figure for viewing or reuse |
 | `results/GENE-mode/guides.csv` | Placement status, spacer coordinates and context measurements |
 | `results/GENE-mode/placements.csv` | All exact local matches, including ambiguous alternatives |
+| `results/GENE-mode/ccres.csv` | ENCODE element IDs, source classes and full intervals, 0-based half-open |
 | `results/GENE-mode/request.json` | Gene and submitted custom sequences, if any |
 | `results/GENE-mode/provenance.json` | Settings, resolved gene, source URLs, raw-file hashes and lock hash |
 | `results/GENE-mode/software.json` | Software versions used in the report |
@@ -163,6 +169,14 @@ peak is not evidence that the locus has no activity. Details and coordinate
 conventions are in [methods.md](docs/methods.md).
 The existing `promoter_bp` column records overlap with these configured TSS
 windows; its name is retained for compatibility with scripts.
+
+The separate `ccre_promoter_bp` and `ccre_enhancer_bp` columns measure
+spacer-plus-PAM overlap with the published cCRE classes. `ccre_ids` and
+`ccre_classes` identify all overlapping elements. Unplaced guides have missing
+measurements; a placed guide with no overlap has zero bases and `none` for
+IDs/classes. In the COTL1 demo, the view contains one promoter-like and three
+proximal enhancer-like elements. The guides overlap the promoter-like element
+by 0, 23 and 9 bases respectively, and none overlap an enhancer-like element.
 
 ## Data availability and licenses
 
@@ -181,6 +195,7 @@ upload custom sequences.
 | K562 H3K4me3 peaks | [ENCFF961SPZ](https://www.encodeproject.org/files/ENCFF961SPZ/) |
 | K562 H3K27ac peaks | [ENCFF038DDS](https://www.encodeproject.org/files/ENCFF038DDS/) |
 | K562 CTCF peaks | [ENCFF769AUF](https://www.encodeproject.org/files/ENCFF769AUF/) |
+| K562 cCRE classes | [ENCODE Registry v4 Core Collection, UCSC](https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=coreCcres); exact file and supporting signal accessions in `metadata/sources.json` |
 
 Original code is under the [MIT license](LICENSE); original documentation and
 report prose are [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
@@ -193,11 +208,12 @@ MIT notice for the course's Reproduce workflow.
 ## How to cite
 
 Klarov, Leonid (2026). *guides: reproducible CRISPRi guide context in K562*,
-version 0.1.3. Machine-readable metadata: [CITATION.cff](CITATION.cff).
+version 0.2.0. Machine-readable metadata: [CITATION.cff](CITATION.cff).
 Also cite the original datasets and publications listed in each report:
 Sanson et al. (2018), [doi:10.1038/s41467-018-07901-8](https://doi.org/10.1038/s41467-018-07901-8);
 Frankish et al. (2019), [doi:10.1093/nar/gky955](https://doi.org/10.1093/nar/gky955);
-ENCODE Project Consortium (2012), [doi:10.1038/nature11247](https://doi.org/10.1038/nature11247),
+ENCODE Project Consortium (2012), [doi:10.1038/nature11247](https://doi.org/10.1038/nature11247);
+Moore et al. (2026), [doi:10.1038/s41586-025-09909-9](https://doi.org/10.1038/s41586-025-09909-9);
 and the specific ENCODE file accessions.
 
 ## Code and capstone status

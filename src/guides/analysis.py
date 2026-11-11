@@ -5,7 +5,7 @@ import json
 import pandas as pd
 
 from .data import (ROOT, SETTINGS, SOURCES, checksum, library_guides,
-                   prepare, read_peaks, read_sequence, validate_guides)
+                   prepare, read_ccres, read_peaks, read_sequence, validate_guides)
 
 
 def reverse_complement(sequence):
@@ -90,8 +90,20 @@ def analyse(request):
     left = int(placed.start.min()) - 1 if len(placed) else centre
     right = int(placed.end.max()) if len(placed) else centre + 1
     view = (max(0, left - SETTINGS["plot_flank"]), right + SETTINGS["plot_flank"])
+    ccres = read_ccres(inputs["ccre"], gene["chrom"], max(0, min(view[0], left - 3)), max(view[1], right + 3))
+    table[["ccre_ids", "ccre_classes", "ccre_promoter_bp", "ccre_enhancer_bp"]] = pd.NA
+    for row in placed.itertuples():
+        start, end = (row.start - 1, row.end + 3) if row.strand == "+" else (row.start - 4, row.end)
+        hits = ccres[(ccres.start < end) & (ccres.end > start)]
+        table.loc[row.Index, "ccre_ids"] = "; ".join(hits.accession) or "none"
+        table.loc[row.Index, "ccre_classes"] = "; ".join(hits.cCRE_class.drop_duplicates()) or "none"
+        for column, classes in [("ccre_promoter_bp", ["Promoter"]),
+                                ("ccre_enhancer_bp", ["Proximal enhancer", "Distal enhancer"])]:
+            intervals = hits.loc[hits.cCRE_class.isin(classes), ["start", "end"]]
+            table.loc[row.Index, column] = overlap_bp(intervals.itertuples(index=False, name=None), start, end)
     output = ROOT / "results" / request["name"]
     output.mkdir(parents=True, exist_ok=True)
+    ccres.to_csv(output / "ccres.csv", index=False)
     table.to_csv(output / "guides.csv", index=False)
     pd.DataFrame(alternatives, columns=["guide", "start", "end", "strand", "pam"]).to_csv(
         output / "placements.csv", index=False)
@@ -104,4 +116,4 @@ def analyse(request):
                     environment_sha256=checksum(ROOT / "pixi.lock", "sha256"))
     (output / "provenance.json").write_text(json.dumps(manifest, indent=2) + "\n")
     return dict(table=table, gene=gene, annotations=annotations, tss=tss, promoters=promoters,
-                tracks=tracks, view=view, output=output, manifest=manifest)
+                tracks=tracks, ccres=ccres, view=view, output=output, manifest=manifest)

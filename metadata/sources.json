@@ -88,6 +88,28 @@
       "license_url": "https://www.addgene.org/terms-of-use/",
       "citation_url": "https://www.addgene.org/pooled-library/broadgpp-human-crispri-dolcetto/",
       "publication": "https://doi.org/10.1038/s41467-018-07901-8"
+    },
+    "ccre": {
+      "filename": "encode4-ccre-K562.bb",
+      "url": "https://hgdownload.soe.ucsc.edu/gbdb/hg38/encode4/ccre/coreCollection/ENCFF414OGC_ENCFF806YEZ_ENCFF849TDM_ENCFF736UDR.bb",
+      "md5": "18769a678376a2a04b73e851f6ee6d53",
+      "bytes": 93066846,
+      "track": "ENCFF414OGC_ENCFF806YEZ_ENCFF849TDM_ENCFF736UDR",
+      "registry": "ENCODE Registry v4 (2024), Core Collection",
+      "source_last_modified": "2025-12-04T16:57:12Z",
+      "assembly": "GRCh38",
+      "biosample": "K562",
+      "signal_files": [
+        "ENCFF414OGC",
+        "ENCFF806YEZ",
+        "ENCFF849TDM",
+        "ENCFF736UDR"
+      ],
+      "license": "ENCODE unrestricted-use policy; cite ENCODE, the Registry and source datasets",
+      "license_url": "https://www.encodeproject.org/about/data-use-policy/",
+      "citation_url": "https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=coreCcres",
+      "documentation_url": "https://raw.githubusercontent.com/ucscGenomeBrowser/kent/master/src/hg/makeDb/trackDb/human/hg38/coreCollection.html",
+      "publication": "https://doi.org/10.1038/s41586-025-09909-9"
     }
   },
   "chromosomes": {

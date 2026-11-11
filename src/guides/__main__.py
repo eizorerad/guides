@@ -66,7 +66,7 @@ def menu():
 def main():
     parser = argparse.ArgumentParser(
         prog="guides",
-        description="Map CRISPRi guides onto a human GRCh38 locus with K562 peak annotations.",
+        description="Map CRISPRi guides onto a human GRCh38 locus with K562 peak and cCRE annotations.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Examples:
   guides                                      Open the terminal menu

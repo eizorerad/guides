@@ -44,14 +44,16 @@ display(Markdown(f"## {gene['gene']} · K562\n\n"
 
 The grey strip and shading show **configured windows around GENCODE transcript
 starts**. GENCODE supplies the starts, not experimentally established promoter
-boundaries. This report has **no ENCODE cCRE promoter-like or enhancer-like
-annotation**. H3K4me3 and H3K27ac peaks alone do not classify an interval as a
-promoter or enhancer, or establish which gene it regulates.
+boundaries. A separate **ENCODE4 K562 cCRE track** shows published biosample-specific
+classifications: red is promoter-like, orange proximal enhancer-like and yellow
+distal enhancer-like. Grey groups other classes, including Low-DNase; their
+exact source labels are listed below. These are candidate regulatory signatures,
+not experimentally established links to the selected gene.
 
 ```{python}
 #| label: fig-locus
-#| fig-cap: "Called K562 peaks above a shared gene-and-guide panel. Guide colours identify inputs, not efficacy; black tips with white edges mark PAMs. The grey strip and shading show configured TSS windows, not experimentally annotated promoters or enhancers. The dashed line is the GENCODE start nearest the midpoint of the placed-guide span (or the view midpoint if none are placed), also identified in the title. The axis shows distance from that start in the target gene's direction, with downstream to the right. Grey peak bars show presence, not signal height. Only unambiguously placed guides are drawn."
-#| fig-alt: "Four compact K562 peak tracks above coloured guide bars with black PAM tips, a labelled grey TSS-window strip and gene arrows. A dashed TSS line and window shading align across the panels."
+#| fig-cap: "K562 peak tracks and a separate ENCODE4 cCRE track above the gene-and-guide panel. The cCRE legend identifies promoter-like and enhancer-like classes; grey groups other classes and Low-DNase. Features crossing the view boundary are clipped only for drawing. Guide colours identify inputs, not efficacy; black tips with white edges mark PAMs. The lower grey strip and shading show configured TSS windows, not cCRE boundaries. The dashed line is the GENCODE start nearest the midpoint of the placed-guide span (or the view midpoint if none are placed), also identified in the title. The axis shows distance from that start in the target gene's direction, with downstream to the right. Peak bars show presence, not signal height. Only unambiguously placed guides are drawn."
+#| fig-alt: "Four K562 peak tracks, a red-orange-yellow ENCODE cCRE track with a class legend, and a lower panel with guide bars, black PAM tips, grey configured TSS windows and gene arrows."
 figure = locus_figure(result)
 display(figure)
 ```
@@ -102,6 +104,42 @@ treated with these guides. An uncalled peak is not proof of absent activity or
 binding. Annotated transcript starts need not be the active starts in K562.
 No expression, knockdown, off-target activity or CTCF-motif result is inferred.
 
+## ENCODE cCRE annotations
+
+These classes come directly from the **ENCODE Registry v4 Core Collection for
+K562 / GRCh38**. They are based on the provider's signal datasets, not inferred
+from the four peak tracks plotted here; processing and thresholds can differ.
+"Proximal" and "distal" refer to ENCODE's annotated TSSs, not necessarily this
+gene. A nearby enhancer-like element is not automatically an enhancer of the
+selected gene. Low-DNase denotes low accessibility in this biosample.
+
+The following table preserves the source's class labels and full element
+boundaries, shown here as **1-based, inclusive**. `ccres.csv` stores the same
+elements with **0-based, half-open** coordinates. The queried interval covers
+the figure and all placed guide footprints, including PAMs.
+
+```{python}
+ccres = result["ccres"].copy()
+if len(ccres):
+    ccres["start"] += 1
+    ccres["accession"] = ccres.accession.map(lambda a: f"[{a}](https://screen.wenglab.org/search?assembly=GRCh38&accessions={a})")
+    display(Markdown(ccres.to_markdown(index=False)))
+else:
+    display(Markdown("No cCREs are annotated in the queried interval."))
+```
+
+Guide overlaps use the **spacer plus PAM** footprint and union overlapping
+elements within each class group. `ccre_promoter_bp` measures overlap with
+the source class `Promoter`; `ccre_enhancer_bp` combines `Proximal enhancer`
+and `Distal enhancer`. A zero is a measured absence of overlap; an em dash
+means the guide was not placed unambiguously. The matching element IDs are
+also saved in the `ccre_ids` column of `guides.csv`.
+
+```{python}
+columns = ["guide", "ccre_classes", "ccre_promoter_bp", "ccre_enhancer_bp"]
+display(Markdown(table[columns].fillna("—").to_markdown(index=False)))
+```
+
 ## Methods and reproducibility
 
 ```{python}
@@ -139,6 +177,9 @@ Dolcetto: Sanson et al. (2018), *Optimized libraries for CRISPR-Cas9 genetic
 screens with multiple modalities*, [doi:10.1038/s41467-018-07901-8](https://doi.org/10.1038/s41467-018-07901-8).
 GENCODE: Frankish et al. (2019), [doi:10.1093/nar/gky955](https://doi.org/10.1093/nar/gky955).
 ENCODE Project Consortium (2012), [doi:10.1038/nature11247](https://doi.org/10.1038/nature11247).
+ENCODE cCRE Registry: Moore et al. (2026), *An Expanded Registry of Candidate
+cis-Regulatory Elements for Studying Transcriptional Regulation*,
+[doi:10.1038/s41586-025-09909-9](https://doi.org/10.1038/s41586-025-09909-9).
 The selected ENCODE file accessions above identify the experiments used here.
 Software is MIT-licensed; report text is CC BY 4.0. Source data retain their
 respective terms, described in the project's `docs/licenses.md`.
@@ -149,7 +190,7 @@ respective terms, described in the project's `docs/licenses.md`.
 ```{python}
 display(Markdown(pd.DataFrame([{"File": s["filename"], "SHA-256": s["sha256"]} for s in sources]).to_markdown(index=False)))
 versions = {"guides": __version__, "Python": platform.python_version(),
-            **{p: importlib.metadata.version(p) for p in ["pandas", "matplotlib", "requests", "ipykernel"]},
+            **{p: importlib.metadata.version(p) for p in ["pandas", "matplotlib", "requests", "ipykernel", "pyBigWig"]},
             "Quarto": subprocess.check_output(["quarto", "--version"], text=True).strip()}
 display(Markdown(pd.DataFrame(versions.items(), columns=["Software", "Version"]).to_markdown(index=False)))
 (result["output"] / "software.json").write_text(json.dumps(versions, indent=2) + "\n")

@@ -1,4 +1,4 @@
-"""Download the reference files and read genes, guides and peak intervals."""
+"""Download reference files and read genes, guides, peaks and cCRE intervals."""
 
 import gzip
 import hashlib
@@ -9,6 +9,7 @@ import tomllib
 from pathlib import Path
 
 import pandas as pd
+import pyBigWig
 import requests
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -120,3 +121,14 @@ def read_peaks(path, chrom):
     peaks = pd.read_csv(path, sep="\t", header=None, usecols=[0, 1, 2],
                         names=["chrom", "start", "end"])
     return peaks.loc[peaks.chrom == chrom, ["start", "end"]].sort_values("start")
+
+
+def read_ccres(path, chrom, start, end):
+    with pyBigWig.open(str(path)) as source:
+        length = source.chroms().get(chrom, 0)
+        entries = (source.entries(chrom, start, min(end, length)) or []) if start < length else []
+    rows = []
+    for left, right, rest in entries:
+        fields = rest.split("\t")  # Fixed UCSC bigBed 9+5 schema: name and cCRE_class.
+        rows.append((chrom, left, right, fields[0], fields[6]))
+    return pd.DataFrame(rows, columns=["chrom", "start", "end", "accession", "cCRE_class"])
