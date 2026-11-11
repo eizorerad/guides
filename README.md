@@ -22,6 +22,12 @@ promoter-like (red), proximal enhancer-like (orange) and distal enhancer-like
 published candidate signatures; proximity does not establish which gene an
 enhancer regulates. H3K27ac peaks alone are not labelled as enhancers.
 
+## Related publication
+
+This software has no associated research publication. It develops part of the
+author's CBIO7102 coursework. The publications behind the reference datasets
+are cited below and in every generated report.
+
 ## Start here
 
 On the author's computer, the command is already installed:
@@ -223,9 +229,28 @@ plotting in `src/guides/`. The executable report is in `reports/`; settings and
 source metadata have separate folders. There is no server, database, trained
 model or workflow engine to manage.
 
+| Location | Contents |
+| --- | --- |
+| `src/guides/` | Terminal interface, input loading, analysis and plotting |
+| `config/` | Gene and window settings |
+| `metadata/` | Source URLs, versions, checksums and data terms |
+| `reports/` | Committed Quarto source and ignored generated HTML |
+| `data/raw/`, `results/` | Ignored downloads and rebuilt outputs |
+| `tests/`, `scripts/` | Coordinate tests and optional command installer |
+| `docs/` | Methods, licenses, validation and capstone checklist |
+| `.github/workflows/` | Reproduce workflow for GitHub |
+| `pixi.toml`, `pixi.lock` | Tasks and the locked software environment |
+
 See [capstone.md](docs/capstone.md) for the rubric mapping and
 [validation.md](docs/validation.md) for checks actually performed. Development
 and the release tag are local. GitHub publication, real pull requests, a hosted
 Reproduce run, a GitHub Release and the partner's reproduction report still
 need to be completed before submission. A Zenodo DOI is optional for this
 capstone and has not been created.
+
+## Contact and contributions
+
+Contact Leonid Klarov at <leonid.klarov@gmail.com> for questions or to discuss
+the project. See [CONTRIBUTING.md](CONTRIBUTING.md) for reporting problems and
+proposing changes, and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for participation
+standards.
