@@ -5,10 +5,12 @@ __pycache__/
 .ipynb_checkpoints/
 .quarto/
 data/
+data/raw/
 results/
 reports/*.html
 reports/*_files/
 reports/*.ipynb
+reports/*.quarto_ipynb
 reports/.jupyter_cache/
 build/
 dist/

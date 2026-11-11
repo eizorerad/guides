@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "Please cite this software and the source datasets listed in metadata/sources.json."
+type: software
+title: "guides: reproducible CRISPRi guide context in K562"
+version: 0.2.1
+repository-code: "https://github.com/eizorerad/guides"
+date-released: 2026-11-11
+authors:
+  - family-names: Klarov
+    given-names: Leonid
+    email: leonid.klarov@gmail.com
+license: MIT
+abstract: >-
+  A small terminal program that places Dolcetto or user-supplied CRISPRi
+  spacers in a human GRCh38 locus and generates a reproducible Quarto report
+  of configured windows around annotated transcript starts and K562 DNase,
+  histone-mark and CTCF peak overlaps, with ENCODE4 K562 cCRE annotations.
+keywords:
+  - CRISPRi
+  - K562
+  - reproducibility
+  - genomic annotation
