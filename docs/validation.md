@@ -143,5 +143,37 @@ the cCRE tables with correctly converted 1-based coordinates, source links,
 an embedded figure and software version 0.2.0. The new demo PNG was visually
 inspected: the separate cCRE track and its legend do not overlap other panels.
 
+### Fresh clone and additional cases
+
+Implementation commit `02a9498` was cloned with `git clone --no-hardlinks` into
+an empty directory. `pixi install --locked` passed. All eight raw files were
+downloaded afresh; no raw files or generated results were copied. The package
+cache was reused. `pixi run reproduce` exited 0 in **110.51 seconds**;
+`/usr/bin/time -v` reported a largest-process RSS of about **349 MiB**.
+
+`guides.csv`, `placements.csv`, `ccres.csv`, `locus.png`, `provenance.json` and
+`software.json` were byte-identical to the working repository's demo.
+All downloaded raw files were read-only, and the clone's Git tree stayed clean.
+Demo SHA-256 checksums:
+
+- `guides.csv`: `fc726bae6000aad6ef0ada9db5843f096af1f4f29daef676c51c87ec1f9a4373`
+- `ccres.csv`: `3fd3d8908ed4ab7d8b0337588b3f255ba15d7238d4db6a90ce9f91b0e5636d28`
+- `locus.png`: `79eb19745d982395e72289c4d1eae4fb9e4c6af63fd5a670fa45291dcb67fb04`
+
+A validation-only custom request in the clone exercised a partial promoter
+overlap, a minus-strand footprint wholly inside a promoter, a plus-strand
+footprint wholly inside an enhancer, and a nonmatching spacer. Independent
+base-set intersections with the UCSC API intervals confirmed respective
+promoter overlaps of 9, 23 and 0 bp, and enhancer overlaps of 0, 0 and 23 bp.
+The unplaced guide retained missing values in all four cCRE CSV columns and
+em dashes in the report. The command completed with stdin at EOF and pure JSON
+on stdout. An all-unplaced analysis combined with an empty-cCRE plotting
+fixture rendered both explicit empty-state messages without errors.
+
+`pixi exec cffconvert --validate` passed schema 1.2.0. The official course
+checker again reported 19/20 on the clean clone, with only the optional release
+DOI absent. The final validation commit changes documentation only; the local
+annotated tag `v0.2.0` identifies the release.
+
 A local verification does not substitute for the hosted Reproduce Action or
 an independent partner report required by the capstone.
