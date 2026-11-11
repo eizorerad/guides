@@ -65,9 +65,11 @@ Later runs reuse checksum-verified local files. Selecting another chromosome
 downloads its compressed FASTA too. Other operating systems are not in the lock.
 
 Install [Pixi](https://pixi.sh/latest/installation/) from its official source
-(tested with v0.83.0), open a fresh clone of this repository, then run:
+(tested with v0.83.0), then clone the repository and run:
 
 ```bash
+git clone https://github.com/eizorerad/guides.git
+cd guides
 pixi install --locked
 pixi run reproduce
 ```
@@ -78,11 +80,11 @@ a browser. No manual data placement, absolute cluster paths or credentials
 are needed. First-run time depends on download speed; see the measured local
 run in [validation.md](docs/validation.md).
 
-To test a local clone before publishing a GitHub repository:
+To reproduce a particular release, check out its tag before installing and
+running the analysis. For example, after the release is available:
 
 ```bash
-git clone /absolute/path/to/guides /tmp/guides-check
-cd /tmp/guides-check
+git checkout v0.2.1
 pixi install --locked
 pixi run reproduce
 ```
@@ -214,7 +216,7 @@ MIT notice for the course's Reproduce workflow.
 ## How to cite
 
 Klarov, Leonid (2026). *guides: reproducible CRISPRi guide context in K562*,
-version 0.2.0. Machine-readable metadata: [CITATION.cff](CITATION.cff).
+version 0.2.1. Machine-readable metadata: [CITATION.cff](CITATION.cff).
 Also cite the original datasets and publications listed in each report:
 Sanson et al. (2018), [doi:10.1038/s41467-018-07901-8](https://doi.org/10.1038/s41467-018-07901-8);
 Frankish et al. (2019), [doi:10.1093/nar/gky955](https://doi.org/10.1093/nar/gky955);
@@ -241,12 +243,16 @@ model or workflow engine to manage.
 | `.github/workflows/` | Reproduce workflow for GitHub |
 | `pixi.toml`, `pixi.lock` | Tasks and the locked software environment |
 
+The public repository is [eizorerad/guides](https://github.com/eizorerad/guides).
+See its [pull requests](https://github.com/eizorerad/guides/pulls?q=is%3Apr),
+[releases](https://github.com/eizorerad/guides/releases) and
+[Reproduce runs](https://github.com/eizorerad/guides/actions/workflows/reproduce.yml)
+for the GitHub evidence. Check the run for the exact release being submitted.
+
 See [capstone.md](docs/capstone.md) for the rubric mapping and
-[validation.md](docs/validation.md) for checks actually performed. Development
-and the release tag are local. GitHub publication, real pull requests, a hosted
-Reproduce run, a GitHub Release and the partner's reproduction report still
-need to be completed before submission. A Zenodo DOI is optional for this
-capstone and has not been created.
+[validation.md](docs/validation.md) for local checks actually performed.
+An independent partner must reproduce the submitted release from this README
+and file their own report. A Zenodo DOI is optional and has not been created.
 
 ## Contact and contributions
 

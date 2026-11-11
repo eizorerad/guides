@@ -17,7 +17,7 @@ also required. Full credit includes being able to explain each choice.
 | Environment | `pixi.toml` and `pixi.lock`; Linux x86-64 is the declared platform. |
 | Automation | Pixi tasks for the menu, download, reproduction and coordinate tests. Scientific settings are in `config/settings.toml`. |
 | Literate report | `reports/report.qmd` recomputes placements, measurements, tables, figure and prose counts on every render; caption, alt text and software versions included. |
-| Version control | Small local commits, topic branches and a local annotated release tag; sole author and committer Leonid Klarov. |
+| Version control | Small described commits, topic branches and annotated release tags; author and committer Leonid Klarov. GitHub pull requests record integration into `main`. |
 | Documentation and openness | README, MIT code license, CC BY 4.0 prose, third-party data terms, `CITATION.cff`, data availability and provenance records; contribution and conduct files. |
 
 The [lesson 11 capstone instructions](https://khanlab.bio/cbio7501-f26/pages/11-documentation.html)
@@ -27,21 +27,22 @@ repository contents, hardware, reproduction, expected outputs and contact.
 Methods distinguish measured overlaps, configured TSS windows and published
 candidate regulatory classes, and state the limits of their interpretation.
 
-## Still required outside this local build
+## GitHub evidence and independent reproduction
 
-The user requested **local commits only**. Consequently a GitHub repository,
-actual pull requests, a GitHub Release and a green hosted Reproduce Action
-are not claimed. A local branch merge is not a pull request.
+The repository is public at [eizorerad/guides](https://github.com/eizorerad/guides).
+The [pull request history](https://github.com/eizorerad/guides/pulls?q=is%3Apr),
+[releases](https://github.com/eizorerad/guides/releases) and
+[Reproduce runs](https://github.com/eizorerad/guides/actions/workflows/reproduce.yml)
+provide the GitHub evidence. A local reproduction alone is not a hosted run;
+check that the successful Action matches the submitted release tag or commit.
 
-Before submitting, publish the repository to GitHub (private is allowed),
-open a real pull request from `feature/terminal-reports` into `main`, and review
-and merge it there. Share the repository with the instructor and partner as
-needed, publish a release containing the final documentation, run the workflow
-on that version and have the
-partner reproduce from the README.
-The existing `v0.2.0` tag records the verified cCRE implementation; the lesson 11
-documentation audit was committed afterwards. Do not treat that older tag as
-containing the later documentation or silently move it.
-The partner should file their own reproduce report; this project does not
-fabricate one. Future changes can be reviewed through real pull requests.
+The earlier `v0.2.0` tag records the cCRE implementation before the lesson 11
+documentation audit. Version `v0.2.1` includes that documentation and the public
+repository metadata; earlier tags are preserved.
+
+Before submission, give the instructor and partner the repository and release
+links. The partner must independently reproduce that release from the README
+and file the [course reproduce report](https://khanlab.bio/cbio7501-f26/assessment/reproduce-report-template.html).
+This project does not fabricate an independent review or reproduction report.
+The instructor also reads the repository and asks for explanations of choices.
 A Zenodo DOI and a container image are optional for this capstone.

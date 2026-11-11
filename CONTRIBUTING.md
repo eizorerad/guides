@@ -1,7 +1,7 @@
 # Contributing
 
-Contact Leonid Klarov at <leonid.klarov@gmail.com> to discuss a change. Once a
-GitHub repository is published, its issues and pull requests can also be used.
+Use [GitHub issues](https://github.com/eizorerad/guides/issues) to discuss a
+change, or contact Leonid Klarov at <leonid.klarov@gmail.com>.
 
 For a problem report, include the command, software version, platform, expected
 result and actual result. Attach a small reproducible example and relevant
