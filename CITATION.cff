@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "Please cite this software and the source datasets listed in metadata/sources.json."
 type: software
 title: "guides: reproducible CRISPRi guide context in K562"
-version: 0.1.2
+version: 0.1.3
 date-released: 2026-11-11
 authors:
   - family-names: Klarov
@@ -12,7 +12,8 @@ license: MIT
 abstract: >-
   A small terminal program that places Dolcetto or user-supplied CRISPRi
   spacers in a human GRCh38 locus and generates a reproducible Quarto report
-  of annotated promoters and K562 DNase, histone-mark and CTCF peak overlaps.
+  of configured windows around annotated transcript starts and K562 DNase,
+  histone-mark and CTCF peak overlaps.
 keywords:
   - CRISPRi
   - K562

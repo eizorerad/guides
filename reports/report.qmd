@@ -42,10 +42,16 @@ display(Markdown(f"## {gene['gene']} · K562\n\n"
 
 ## Locus map
 
+The grey strip and shading show **configured windows around GENCODE transcript
+starts**. GENCODE supplies the starts, not experimentally established promoter
+boundaries. This report has **no ENCODE cCRE promoter-like or enhancer-like
+annotation**. H3K4me3 and H3K27ac peaks alone do not classify an interval as a
+promoter or enhancer, or establish which gene it regulates.
+
 ```{python}
 #| label: fig-locus
-#| fig-cap: "Called K562 peaks above a shared gene-and-guide panel. Guide colours identify inputs, not efficacy; black tips with white edges mark PAMs. Orange intervals and grey shading show windows around annotated target-gene transcript starts. The dashed line is the GENCODE start nearest the midpoint of the placed-guide span (or the view midpoint if none are placed), also identified in the title. The axis shows distance from that start in the target gene's direction, with downstream to the right. Grey peak bars show presence, not signal height. Only unambiguously placed guides are drawn."
-#| fig-alt: "Four compact K562 peak tracks above coloured guide bars with black PAM tips, an orange promoter strip and gene arrows. A dashed TSS line and promoter shading align across the panels."
+#| fig-cap: "Called K562 peaks above a shared gene-and-guide panel. Guide colours identify inputs, not efficacy; black tips with white edges mark PAMs. The grey strip and shading show configured TSS windows, not experimentally annotated promoters or enhancers. The dashed line is the GENCODE start nearest the midpoint of the placed-guide span (or the view midpoint if none are placed), also identified in the title. The axis shows distance from that start in the target gene's direction, with downstream to the right. Grey peak bars show presence, not signal height. Only unambiguously placed guides are drawn."
+#| fig-alt: "Four compact K562 peak tracks above coloured guide bars with black PAM tips, a labelled grey TSS-window strip and gene arrows. A dashed TSS line and window shading align across the panels."
 figure = locus_figure(result)
 display(figure)
 ```
@@ -72,6 +78,9 @@ is measured from the spacer midpoint to the nearest annotated transcript start
 of the target gene; positive means downstream in the **gene's** orientation.
 CTCF distance is the minimum gap between the guide footprint and a called CTCF
 peak on the same chromosome; touching intervals have zero gap.
+
+`promoter_bp` is the existing column name for overlap with the **configured
+TSS windows**. It does not measure overlap with experimentally called promoters.
 
 ```{python}
 columns = ["guide", "tss_distance_bp", "promoter_bp", "DNase_bp", "H3K4me3_bp", "H3K27ac_bp", "CTCF_bp", "nearest_CTCF_bp"]
@@ -100,8 +109,8 @@ start, end = result["manifest"]["search_interval"]
 display(Markdown(f"The exact-match search covers **{gene['chrom']}:{start + 1:,}–{end:,}** "
     f"(the annotated gene plus **{SETTINGS['search_flank']:,} bp** on each side, clipped to the reference). "
     "Both strands are searched for the input spacer and a compatible NGG PAM. "
-    f"Target-promoter windows extend **{SETTINGS['promoter_upstream']:,} bp upstream** and "
-    f"**{SETTINGS['promoter_downstream']:,} bp downstream** of each GENCODE basic transcript start. "
+    f"Configured TSS windows extend **{SETTINGS['promoter_upstream']:,} bp upstream** and "
+    f"**{SETTINGS['promoter_downstream']:,} bp downstream** of each GENCODE basic transcript start, including the TSS base itself. "
     f"The figure adds **{SETTINGS['plot_flank']:,} bp** on either side of the placed spacers. "
     "Unknown bases, mismatches, bulges, other PAMs and alternative assembly contigs are not searched."))
 ```

@@ -84,5 +84,30 @@ The interactive menu was separately opened in a terminal and exited with 0.
 `pixi install --locked` passed; the demo measurements retained the baseline
 `guides.csv` SHA-256 above. No analysis or plotting code changed in this update.
 
+## v0.1.3: TSS-window and enhancer audit
+
+The raw GENCODE v32 GTF contains two basic COTL1 transcripts, both on the
+minus strand, with 1-based TSSs at chr16:84,618,059 and chr16:84,618,078.
+These agree with the program's parsed starts. Independently enumerating bases
+confirmed that the two configured windows are chr16:84,617,859–84,619,059 and
+chr16:84,617,878–84,619,078 (1-based inclusive). Each contains exactly the
+gene-oriented offsets -1000 through +200, including the TSS base: 1201 bases.
+Independent set intersections confirmed 23 bp of window overlap for each of
+the three demo guide footprints.
+
+No enhancer or ENCODE cCRE annotation is present among the loaded sources.
+The coursework's orange cCRE colour meant proximal enhancer-like elements;
+reusing orange for these configured windows could mislead a reader. The
+strip is now neutral grey and directly labelled "Configured TSS windows".
+The report, README, methods and citation abstract distinguish these windows
+from experimentally annotated promoters and enhancers. The existing
+`promoter_bp` column retains its name for script compatibility, with an
+explicit definition in the report and README.
+
+`pixi install --locked` passed. Both saved example reports were rebuilt with
+the corrected descriptions; the new figure was visually inspected and the
+demo measurements retained the baseline `guides.csv` SHA-256. This update
+clarifies the existing data; it does not add a promoter/enhancer classifier.
+
 A local verification does not substitute for the hosted Reproduce Action or
 an independent partner report required by the capstone.

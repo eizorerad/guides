@@ -12,8 +12,10 @@
    statuses; neither is silently assigned a location.
 5. Find the nearest annotated target-gene transcript start to the spacer's
    midpoint. Report the signed distance in the target gene's orientation.
-   Promoter intervals are a stated window around *all* its basic transcript
-   starts, not an experimentally established active promoter.
+   The configured windows surround *all* its basic transcript starts; they
+   are not experimentally established active promoters. The existing column
+   `promoter_bp` records overlap with those windows and keeps its name for
+   compatibility with scripts.
 6. Recompute the table, descriptive counts and locus figure inside Quarto.
 
 Internal intervals, GTF conversion and `placements.csv` use **0-based,
@@ -33,9 +35,18 @@ their colours and numbers identify inputs, not knockdown or efficacy ranks.
 
 The compact tracks, grey background windows, black PAM tips and lower guide
 panel follow the visual layout of the author's coursework notebook 01.6.
-Here, grey bars show called peak intervals and orange bars show the defined
-promoter windows. They do not reproduce that notebook's bigWig signal curves,
-measured knockdown colours, cCRE strip or CRISPick design windows.
+Here, the upper grey bars show called peaks, and the labelled lower grey strip
+shows the configured TSS windows. The old orange strip was recoloured because
+orange meant proximal enhancer-like elements in the coursework. No ENCODE
+cCRE promoter-like or enhancer-like intervals are loaded by this program.
+H3K4me3 and H3K27ac peaks alone do not identify a regulatory element's type
+or its target gene. These figures also do not reproduce the coursework's
+bigWig curves, measured knockdown colours or CRISPick design windows.
+
+The default TSS window includes offsets from -1000 through +200 in the gene's
+orientation: 1000 upstream bases, the TSS base itself, and 200 downstream
+bases, for 1201 bases total. Minus-strand windows are reflected on the genomic
+axis. Overlapping transcript windows are counted as a union, not repeatedly.
 
 Only peak *intervals* are drawn. No peak height, motif, knockdown or off-target
 measurement is fabricated. All four ENCODE tracks are required inputs; failed

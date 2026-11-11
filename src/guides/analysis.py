@@ -54,6 +54,7 @@ def analyse(request):
                               (annotations.kind == "transcript")]
     tss = sorted(set(transcripts.start if gene["strand"] == "+" else transcripts.end - 1))
     upstream, downstream = SETTINGS["promoter_upstream"], SETTINGS["promoter_downstream"]
+    # Configured TSS windows, not experimentally annotated regulatory elements.
     promoters = [(t - upstream, t + downstream + 1) if gene["strand"] == "+" else
                  (t - downstream, t + upstream + 1) for t in tss]
     tracks = {key: read_peaks(inputs[key], gene["chrom"]) for key in SOURCES["tracks"]}

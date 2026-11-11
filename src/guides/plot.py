@@ -40,7 +40,9 @@ def locus_figure(result):
         ax.set(ylabel=f"K562 {key}\ncalled peaks", ylim=(0, 1))
         ax.yaxis.label.set_size(8)
     ax = axes[-1]
-    ax.broken_barh(promoters, (count + 1.05, 0.22), facecolors="tab:orange")
+    ax.broken_barh(promoters, (count + 1.05, 0.22), facecolors="0.75")
+    ax.text(0.01, count + 1.16, "Configured TSS windows", transform=ax.get_yaxis_transform(),
+            va="center", fontsize=7, color="0.15")
     genes = result["annotations"]
     genes = genes[(genes.kind == "gene") & (genes.chrom == gene["chrom"]) &
                   (genes.start < right) & (genes.end > left)]
@@ -69,7 +71,7 @@ def locus_figure(result):
     ax.set_xticks([origin + x for x in offsets if left <= origin + x <= right])
     ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: f"{round(direction * (x - origin)):,}"))
     ax.set_xlabel("Offset from the selected GENCODE TSS (bp; downstream +)\n"
-                  "Shading / orange strip: annotated promoter windows · dashed line: selected TSS", fontsize=8)
+                  "Grey strip / shading: configured TSS windows (not promoter/enhancer calls)", fontsize=8)
     fig.suptitle(f"{gene['gene']} · K562 · GRCh38 · {gene['strand']} strand\n"
                  f"TSS {gene['chrom']}:{origin + 1:,} · guide colours identify inputs; black tips mark PAMs", fontsize=10)
     for extension in ["png", "svg"]:

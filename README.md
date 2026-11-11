@@ -7,12 +7,16 @@ context. Author: Leonid Klarov <leonid.klarov@gmail.com>.
 This CBIO7501 capstone develops the locus-annotation part of my CBIO7102
 **One gene, four guides** coursework. The research question is: **how does local
 regulatory context differ between guides targeting the same gene?** The report
-compares annotated promoter windows and DNase, H3K4me3, H3K27ac and CTCF peaks.
+compares configured windows around annotated transcription start sites (TSSs)
+and DNase, H3K4me3, H3K27ac and CTCF peaks.
 
 The first version supports human **GRCh38, K562, SpCas9/NGG and CRISPRi**.
 It retrieves existing guides from **Dolcetto Set A**; it does not design or
 rank new guides. It is a descriptive analysis, not an efficacy or genome-wide
 off-target predictor. Only called peak intervals are drawn, not signal heights.
+The grey TSS-window strip is defined by distance from transcript starts, not
+experimental promoter boundaries. No promoter-like or enhancer-like ENCODE
+cCRE annotation is loaded; H3K27ac peaks are not labelled as enhancers.
 
 ## Start here
 
@@ -153,10 +157,12 @@ directory elsewhere before comparing separate custom sets. Run one report at
 a time. Generated outputs, raw data and the environment are ignored by Git.
 
 In the COTL1 example, the three Dolcetto spacers should each have one exact local
-placement. They overlap the defined promoter windows and selected H3K4me3
+placement. They overlap the defined TSS windows and selected H3K4me3
 peaks, but not the selected DNase, H3K27ac or CTCF peaks. Absence of a called
 peak is not evidence that the locus has no activity. Details and coordinate
 conventions are in [methods.md](docs/methods.md).
+The existing `promoter_bp` column records overlap with these configured TSS
+windows; its name is retained for compatibility with scripts.
 
 ## Data availability and licenses
 
@@ -187,7 +193,7 @@ MIT notice for the course's Reproduce workflow.
 ## How to cite
 
 Klarov, Leonid (2026). *guides: reproducible CRISPRi guide context in K562*,
-version 0.1.2. Machine-readable metadata: [CITATION.cff](CITATION.cff).
+version 0.1.3. Machine-readable metadata: [CITATION.cff](CITATION.cff).
 Also cite the original datasets and publications listed in each report:
 Sanson et al. (2018), [doi:10.1038/s41467-018-07901-8](https://doi.org/10.1038/s41467-018-07901-8);
 Frankish et al. (2019), [doi:10.1093/nar/gky955](https://doi.org/10.1093/nar/gky955);
