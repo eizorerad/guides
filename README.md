@@ -19,7 +19,7 @@
 
 A small terminal program that places published or user-supplied CRISPRi guides
 on a human GRCh38 locus and generates a Quarto report of their K562 regulatory
-context. Author: Leonid Klarov <leonid.klarov@gmail.com>.
+context.
 
 This CBIO7501 capstone develops the locus-annotation part of my CBIO7102
 **One gene, four guides** coursework. The research question is: **how does local
