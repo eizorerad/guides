@@ -1,0 +1,7 @@
+# The first version supports human GRCh38, K562 and SpCas9 CRISPRi.
+demo_gene = "COTL1"
+search_flank = 10000
+plot_flank = 1200
+promoter_upstream = 1000
+promoter_downstream = 200
+
