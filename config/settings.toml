@@ -4,4 +4,3 @@ search_flank = 10000
 plot_flank = 500
 promoter_upstream = 1000
 promoter_downstream = 200
-
