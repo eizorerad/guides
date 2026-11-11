@@ -1,0 +1,149 @@
+---
+title: "CRISPRi guide context"
+author: "Leonid Klarov"
+format:
+  html:
+    theme: cosmo
+    toc: true
+    embed-resources: true
+jupyter: python3
+execute:
+  echo: false
+  warning: false
+---
+
+```{python}
+import importlib.metadata
+import json
+import os
+import platform
+import subprocess
+from pathlib import Path
+
+import pandas as pd
+from IPython.display import Markdown, display
+from guides import __version__
+from guides.analysis import analyse
+from guides.data import ROOT, SETTINGS
+from guides.plot import locus_figure
+
+request = json.loads(Path(os.environ["GUIDES_REQUEST"]).read_text())
+result = analyse(request)
+table, gene = result["table"], result["gene"]
+placed = table[table.status == "placed"]
+display(Markdown(f"## {gene['gene']} · K562\n\n"
+    f"**Question:** how does local regulatory context differ between guides targeting {gene['gene']}?\n\n"
+    f"Input: **{request['mode']}**. Reference: **GRCh38**, annotation: **GENCODE v32**. "
+    f"Of **{len(table)}** submitted guides, **{len(placed)}** have exactly one matching "
+    f"spacer plus NGG PAM in the target search interval, **{int((table.status == 'not found').sum())}** "
+    f"have none, and **{int((table.status == 'ambiguous').sum())}** have multiple matches. "
+    "This is local placement, not a genome-wide specificity test."))
+```
+
+## Locus map
+
+```{python}
+#| label: fig-locus
+#| fig-cap: "Guide locations and called K562 peak intervals. Red bars mark spacers, dark tips mark PAMs. Orange promoter intervals are defined around annotated target-gene transcript starts; vertical orange ticks are those starts. The genomic axis increases left to right, including for minus-strand genes. Peak bars show intervals, not continuous signal or predicted efficacy. Only unambiguously placed guides are drawn."
+#| fig-alt: "Stacked genomic tracks showing nearby genes, annotated target promoters, submitted guides with PAMs, and K562 DNase, H3K4me3, H3K27ac and CTCF peaks."
+figure = locus_figure(result)
+display(figure)
+```
+
+## Guide placement
+
+Guide numbers follow input order; they are not efficacy ranks. Coordinates in this
+table are **1-based, inclusive**. The spacer is written in its own 5′–3′ orientation;
+the strand tells how it maps to the reference. All alternative exact placements
+are retained in `placements.csv` using **0-based, half-open** coordinates.
+
+```{python}
+placement = table[["guide", "sequence", "status", "matches", "start", "end", "strand", "pam"]].copy()
+for column in ["start", "end"]:
+    placement[column] = placement[column].map(lambda n: "—" if pd.isna(n) else f"{n:.0f}")
+display(Markdown(placement.fillna("—").to_markdown(index=False)))
+```
+
+## Regulatory context
+
+Overlap is the number of reference bases shared by a **spacer plus its PAM** and
+the union of called peaks. Overlapping peaks are not counted twice. TSS distance
+is measured from the spacer midpoint to the nearest annotated transcript start
+of the target gene; positive means downstream in the **gene's** orientation.
+CTCF distance is the minimum gap between the guide footprint and a called CTCF
+peak on the same chromosome; touching intervals have zero gap.
+
+```{python}
+columns = ["guide", "tss_distance_bp", "promoter_bp", "DNase_bp", "H3K4me3_bp", "H3K27ac_bp", "CTCF_bp", "nearest_CTCF_bp"]
+display(Markdown(table[columns].fillna("—").to_markdown(index=False, floatfmt=".1f")))
+if len(placed):
+    counts = {key: int((placed[f"{key}_bp"] > 0).sum()) for key in result["tracks"]}
+    display(Markdown(f"Among the **{len(placed)}** placed guides, **{counts['DNase']}** overlap "
+        f"a called DNase peak, **{counts['H3K4me3']}** an H3K4me3 peak, "
+        f"**{counts['H3K27ac']}** an H3K27ac peak and **{counts['CTCF']}** a CTCF peak. "
+        "These are descriptive annotations of the selected reference datasets."))
+else:
+    display(Markdown("No guide has an unambiguous placement, so no regulatory comparison can be made."))
+```
+
+Differences here identify candidate contextual differences; they do not establish
+why guides behave differently. Shared context also does not establish equal
+efficacy. ENCODE measurements come from separate K562 experiments, not from cells
+treated with these guides. An uncalled peak is not proof of absent activity or
+binding. Annotated transcript starts need not be the active starts in K562.
+No expression, knockdown, off-target activity or CTCF-motif result is inferred.
+
+## Methods and reproducibility
+
+```{python}
+start, end = result["manifest"]["search_interval"]
+display(Markdown(f"The exact-match search covers **{gene['chrom']}:{start + 1:,}–{end:,}** "
+    f"(the annotated gene plus **{SETTINGS['search_flank']:,} bp** on each side, clipped to the reference). "
+    "Both strands are searched for the input spacer and a compatible NGG PAM. "
+    f"Target-promoter windows extend **{SETTINGS['promoter_upstream']:,} bp upstream** and "
+    f"**{SETTINGS['promoter_downstream']:,} bp downstream** of each GENCODE basic transcript start. "
+    f"The figure adds **{SETTINGS['plot_flank']:,} bp** on either side of the placed spacers. "
+    "Unknown bases, mismatches, bulges, other PAMs and alternative assembly contigs are not searched."))
+```
+
+All tables, measurements and the figure are recomputed in this Quarto render.
+The raw files are downloaded by code, checked against committed checksums and
+kept read-only. Input sequences, settings, source URLs and SHA-256 checksums are
+saved beside the results in `provenance.json`. The demonstration is rebuilt with
+`pixi install --locked` followed by `pixi run reproduce`.
+
+## Sources and terms
+
+This report develops the locus-annotation part of **One gene, four guides**, the
+author's CBIO7102 coursework. The implementation is standalone and uses public
+reference data; no MBZUAI account is needed.
+
+```{python}
+sources = result["manifest"]["sources"]
+for source in sources:
+    label = source.get("accession", source["filename"])
+    display(Markdown(f"- **{source['key']}**: [{label}]({source['citation_url']}). "
+                     f"[{source['license']}]({source['license_url']})."))
+```
+
+Dolcetto: Sanson et al. (2018), *Optimized libraries for CRISPR-Cas9 genetic
+screens with multiple modalities*, [doi:10.1038/s41467-018-07901-8](https://doi.org/10.1038/s41467-018-07901-8).
+GENCODE: Frankish et al. (2019), [doi:10.1093/nar/gky955](https://doi.org/10.1093/nar/gky955).
+ENCODE Project Consortium (2012), [doi:10.1038/nature11247](https://doi.org/10.1038/nature11247).
+The selected ENCODE file accessions above identify the experiments used here.
+Software is MIT-licensed; report text is CC BY 4.0. Source data retain their
+respective terms, described in the project's `docs/licenses.md`.
+
+<details>
+<summary>Raw-file checksums and software versions</summary>
+
+```{python}
+display(Markdown(pd.DataFrame([{"File": s["filename"], "SHA-256": s["sha256"]} for s in sources]).to_markdown(index=False)))
+versions = {"guides": __version__, "Python": platform.python_version(),
+            **{p: importlib.metadata.version(p) for p in ["pandas", "matplotlib", "requests", "ipykernel"]},
+            "Quarto": subprocess.check_output(["quarto", "--version"], text=True).strip()}
+display(Markdown(pd.DataFrame(versions.items(), columns=["Software", "Version"]).to_markdown(index=False)))
+(result["output"] / "software.json").write_text(json.dumps(versions, indent=2) + "\n")
+```
+
+</details>
