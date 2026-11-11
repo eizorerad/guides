@@ -1,6 +1,6 @@
 [workspace]
 name = "guides"
-version = "0.1.0"
+version = "0.1.1"
 description = "A small terminal tool for CRISPRi guide context in K562"
 authors = ["Leonid Klarov <leonid.klarov@gmail.com>"]
 channels = ["conda-forge"]

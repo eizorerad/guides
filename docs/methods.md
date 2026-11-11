@@ -17,15 +17,25 @@
 6. Recompute the table, descriptive counts and locus figure inside Quarto.
 
 Internal intervals, GTF conversion and `placements.csv` use **0-based,
-half-open** coordinates. Human-facing `guides.csv` spacer starts and ends and
-the figure axis use **1-based, inclusive** coordinates. Distances are base-pair
+half-open** coordinates. Human-facing `guides.csv` spacer starts and ends use
+**1-based, inclusive** coordinates. Distances are base-pair
 differences; spacer-midpoint distances may end in .5. CTCF gap zero means
 overlapping or touching intervals; `CTCF_bp` distinguishes overlap from touching.
 
-The figure preserves increasing genomic coordinates on both strands. The
-gene arrow gives transcription direction. Guides are displayed on separate
-rows so nearby or overlapping spacers remain visible. Guide numbers follow
-input/catalogue order and are not design scores or efficacy ranks.
+The figure's origin is the annotated target-gene TSS nearest the midpoint of
+the placed-guide span (or the view midpoint when none are placed). Its 1-based
+genomic position appears in the title. The axis shows offsets in the target
+gene's direction, so downstream is always to the right; a minus-strand gene
+has decreasing genomic coordinates from left to right. Figure offsets refer
+to this one displayed TSS, whereas the table uses each guide's nearest TSS.
+The gene arrows show transcription direction. Guides have separate rows;
+their colours and numbers identify inputs, not knockdown or efficacy ranks.
+
+The compact tracks, grey background windows, black PAM tips and lower guide
+panel follow the visual layout of the author's coursework notebook 01.6.
+Here, grey bars show called peak intervals and orange bars show the defined
+promoter windows. They do not reproduce that notebook's bigWig signal curves,
+measured knockdown colours, cCRE strip or CRISPick design windows.
 
 Only peak *intervals* are drawn. No peak height, motif, knockdown or off-target
 measurement is fabricated. All four ENCODE tracks are required inputs; failed

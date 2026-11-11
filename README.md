@@ -22,12 +22,12 @@ On the author's computer, the command is already installed:
 guides
 ```
 
-The menu is in Russian; the scientific report is in English:
+The menu and scientific report are in English:
 
 ```text
-1  Ген → guides из Dolcetto Set A
-2  Ген + свои guides
-0  Выход
+1  Gene → guides from Dolcetto Set A
+2  Gene + custom guides
+0  Exit
 ```
 
 Choose **1** and enter `COTL1` for the demonstration. Choose **2** to enter a gene
@@ -149,7 +149,7 @@ MIT notice for the course's Reproduce workflow.
 ## How to cite
 
 Klarov, Leonid (2026). *guides: reproducible CRISPRi guide context in K562*,
-version 0.1.0. Machine-readable metadata: [CITATION.cff](CITATION.cff).
+version 0.1.1. Machine-readable metadata: [CITATION.cff](CITATION.cff).
 Also cite the original datasets and publications listed in each report:
 Sanson et al. (2018), [doi:10.1038/s41467-018-07901-8](https://doi.org/10.1038/s41467-018-07901-8);
 Frankish et al. (2019), [doi:10.1093/nar/gky955](https://doi.org/10.1093/nar/gky955);

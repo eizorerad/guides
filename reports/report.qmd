@@ -44,8 +44,8 @@ display(Markdown(f"## {gene['gene']} · K562\n\n"
 
 ```{python}
 #| label: fig-locus
-#| fig-cap: "Guide locations and called K562 peak intervals. Red bars mark spacers, dark tips mark PAMs. Orange promoter intervals are defined around annotated target-gene transcript starts; vertical orange ticks are those starts. The genomic axis increases left to right, including for minus-strand genes. Peak bars show intervals, not continuous signal or predicted efficacy. Only unambiguously placed guides are drawn."
-#| fig-alt: "Stacked genomic tracks showing nearby genes, annotated target promoters, submitted guides with PAMs, and K562 DNase, H3K4me3, H3K27ac and CTCF peaks."
+#| fig-cap: "Called K562 peaks above a shared gene-and-guide panel. Guide colours identify inputs, not efficacy; black tips with white edges mark PAMs. Orange intervals and grey shading show windows around annotated target-gene transcript starts. The dashed line is the GENCODE start nearest the midpoint of the placed-guide span (or the view midpoint if none are placed), also identified in the title. The axis shows distance from that start in the target gene's direction, with downstream to the right. Grey peak bars show presence, not signal height. Only unambiguously placed guides are drawn."
+#| fig-alt: "Four compact K562 peak tracks above coloured guide bars with black PAM tips, an orange promoter strip and gene arrows. A dashed TSS line and promoter shading align across the panels."
 figure = locus_figure(result)
 display(figure)
 ```
