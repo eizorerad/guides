@@ -3,7 +3,6 @@ title: "CRISPRi guide context"
 author: "Leonid Klarov"
 format:
   html:
-    theme: cosmo
     toc: true
     embed-resources: true
 jupyter: python3
@@ -154,9 +153,8 @@ display(Markdown(f"The exact-match search covers **{gene['chrom']}:{start + 1:,}
 ```
 
 All tables, measurements and the figure are recomputed in this Quarto render.
-The raw files are downloaded by code, checked against committed checksums and
-kept read-only. Input sequences, settings, source URLs and SHA-256 checksums are
-saved beside the results in `provenance.json`. The demonstration is rebuilt with
+The five fixed files are checked against their MD5s. Regional queries and
+SHA-256s of their data are recorded in `provenance.json`. Both are cached for offline use. The demonstration is rebuilt with
 `pixi install --locked` followed by `pixi run reproduce`.
 
 ## Sources and terms
@@ -167,8 +165,8 @@ reference data; no MBZUAI account is needed.
 
 ```{python}
 sources = result["manifest"]["sources"]
-for source in sources:
-    label = source.get("accession", source["filename"])
+for source in {s["key"]: s for s in sources}.values():
+    label = source.get("accession") or source.get("release") or source.get("assembly") or source["filename"]
     display(Markdown(f"- **{source['key']}**: [{label}]({source['citation_url']}). "
                      f"[{source['license']}]({source['license_url']})."))
 ```
@@ -185,12 +183,12 @@ Software is MIT-licensed; report text is CC BY 4.0. Source data retain their
 respective terms, described in the project's `docs/licenses.md`.
 
 <details>
-<summary>Raw-file checksums and software versions</summary>
+<summary>Input checksums and software versions</summary>
 
 ```{python}
-display(Markdown(pd.DataFrame([{"File": s["filename"], "SHA-256": s["sha256"]} for s in sources]).to_markdown(index=False)))
+display(Markdown(pd.DataFrame([{"Input": s["filename"], "SHA-256 (file or JSON data)": s["sha256"]} for s in sources]).to_markdown(index=False)))
 versions = {"guides": __version__, "Python": platform.python_version(),
-            **{p: importlib.metadata.version(p) for p in ["pandas", "matplotlib", "requests", "ipykernel", "pyBigWig"]},
+            **{p: importlib.metadata.version(p) for p in ["pandas", "matplotlib", "requests", "ipykernel"]},
             "Quarto": subprocess.check_output(["quarto", "--version"], text=True).strip()}
 display(Markdown(pd.DataFrame(versions.items(), columns=["Software", "Version"]).to_markdown(index=False)))
 (result["output"] / "software.json").write_text(json.dumps(versions, indent=2) + "\n")

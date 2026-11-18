@@ -21,7 +21,8 @@
       ],
       "license": "ENCODE unrestricted-use policy; cite ENCODE and the experiment",
       "license_url": "https://www.encodeproject.org/about/data-use-policy/",
-      "citation_url": "https://www.encodeproject.org/files/ENCFF185XRG/"
+      "citation_url": "https://www.encodeproject.org/files/ENCFF185XRG/",
+      "bytes": 1821516
     },
     "H3K4me3": {
       "filename": "ENCFF961SPZ.bed.gz",
@@ -37,7 +38,8 @@
       ],
       "license": "ENCODE unrestricted-use policy; cite ENCODE and the experiment",
       "license_url": "https://www.encodeproject.org/about/data-use-policy/",
-      "citation_url": "https://www.encodeproject.org/files/ENCFF961SPZ/"
+      "citation_url": "https://www.encodeproject.org/files/ENCFF961SPZ/",
+      "bytes": 668981
     },
     "H3K27ac": {
       "filename": "ENCFF038DDS.bed.gz",
@@ -53,7 +55,8 @@
       ],
       "license": "ENCODE unrestricted-use policy; cite ENCODE and the experiment",
       "license_url": "https://www.encodeproject.org/about/data-use-policy/",
-      "citation_url": "https://www.encodeproject.org/files/ENCFF038DDS/"
+      "citation_url": "https://www.encodeproject.org/files/ENCFF038DDS/",
+      "bytes": 1298162
     },
     "CTCF": {
       "filename": "ENCFF769AUF.bed.gz",
@@ -69,15 +72,8 @@
       ],
       "license": "ENCODE unrestricted-use policy; cite ENCODE and the experiment",
       "license_url": "https://www.encodeproject.org/about/data-use-policy/",
-      "citation_url": "https://www.encodeproject.org/files/ENCFF769AUF/"
-    },
-    "annotation": {
-      "filename": "gencode.v32.basic.annotation.gtf.gz",
-      "url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.basic.annotation.gtf.gz",
-      "md5": "df3ddc13b34b563bb72fee071d06889a",
-      "license": "GENCODE open-access data; EMBL-EBI Terms of Use",
-      "license_url": "https://www.ebi.ac.uk/about/terms-of-use/",
-      "citation_url": "https://www.gencodegenes.org/human/release_32.html"
+      "citation_url": "https://www.encodeproject.org/files/ENCFF769AUF/",
+      "bytes": 919491
     },
     "library": {
       "filename": "dolcetto-set-a.tsv",
@@ -87,13 +83,34 @@
       "license": "Addgene Terms of Use (noncommercial academic use); no separate table license asserted",
       "license_url": "https://www.addgene.org/terms-of-use/",
       "citation_url": "https://www.addgene.org/pooled-library/broadgpp-human-crispri-dolcetto/",
-      "publication": "https://doi.org/10.1038/s41467-018-07901-8"
+      "publication": "https://doi.org/10.1038/s41467-018-07901-8",
+      "bytes": 1911790
+    }
+  },
+  "ucsc_api": "https://api.genome.ucsc.edu",
+  "regions": {
+    "lookup": {
+      "url": "https://biit.cs.ut.ee/gprofiler_archive3/e98_eg45_p14/api/convert/convert/",
+      "release": "Ensembl 98",
+      "citation_url": "https://biit.cs.ut.ee/gprofiler/page/archives",
+      "license": "g:Profiler archive; Ensembl data terms",
+      "license_url": "https://www.ensembl.org/info/about/legal/disclaimer.html"
+    },
+    "annotation": {
+      "release": "GENCODE v32 (Ensembl 98)",
+      "citation_url": "https://www.gencodegenes.org/human/release_32.html",
+      "license": "GENCODE open-access data; EMBL-EBI Terms of Use",
+      "license_url": "https://www.ebi.ac.uk/about/terms-of-use/",
+      "url": "https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/gencode/{chrom}/",
+      "mirror_config": "https://github.com/GMOD/jbrowse-components/blob/64998eb5d5f93d5f1c9d93afa0b12ddf83c528d3/test_data/config.json#L246-L253"
+    },
+    "reference": {
+      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
+      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
+      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data",
+      "assembly": "GRCh38/hg38"
     },
     "ccre": {
-      "filename": "encode4-ccre-K562.bb",
-      "url": "https://hgdownload.soe.ucsc.edu/gbdb/hg38/encode4/ccre/coreCollection/ENCFF414OGC_ENCFF806YEZ_ENCFF849TDM_ENCFF736UDR.bb",
-      "md5": "18769a678376a2a04b73e851f6ee6d53",
-      "bytes": 93066846,
       "track": "ENCFF414OGC_ENCFF806YEZ_ENCFF849TDM_ENCFF736UDR",
       "registry": "ENCODE Registry v4 (2024), Core Collection",
       "source_last_modified": "2025-12-04T16:57:12Z",
@@ -110,200 +127,16 @@
       "citation_url": "https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=coreCcres",
       "documentation_url": "https://raw.githubusercontent.com/ucscGenomeBrowser/kent/master/src/hg/makeDb/trackDb/human/hg38/coreCollection.html",
       "publication": "https://doi.org/10.1038/s41586-025-09909-9"
-    }
-  },
-  "chromosomes": {
-    "chr1": {
-      "filename": "chr1.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr1.fa.gz",
-      "md5": "f069c41e7cc8c2d3a7655cbb2d4186b8",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
     },
-    "chr10": {
-      "filename": "chr10.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr10.fa.gz",
-      "md5": "b7d478cb06a84400f74a8932cd5fad0d",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr11": {
-      "filename": "chr11.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr11.fa.gz",
-      "md5": "76542ddafa00440fb67606649e387d7a",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr12": {
-      "filename": "chr12.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr12.fa.gz",
-      "md5": "ea464740f7571bd35d8bc4776be874fa",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr13": {
-      "filename": "chr13.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr13.fa.gz",
-      "md5": "faddb3ad7e9c468ade70b1c88171f1eb",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr14": {
-      "filename": "chr14.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr14.fa.gz",
-      "md5": "c970b8826b6434daa4292d95a300bfd9",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr15": {
-      "filename": "chr15.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr15.fa.gz",
-      "md5": "fd152c2f9d14aaa1b9267e8a1d7561ff",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr16": {
-      "filename": "chr16.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr16.fa.gz",
-      "md5": "6add68e486a69be4ae8cbbc9453cc173",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr17": {
-      "filename": "chr17.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr17.fa.gz",
-      "md5": "023ccefd298db339159a446e88d742ac",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr18": {
-      "filename": "chr18.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr18.fa.gz",
-      "md5": "f3c68bdafea015e6f724c3d646fa2282",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr19": {
-      "filename": "chr19.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr19.fa.gz",
-      "md5": "5668c1a7edca32cc5d68bbeb26061d81",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr2": {
-      "filename": "chr2.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr2.fa.gz",
-      "md5": "609cc41e8a44eb99f87839456c6ed333",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr20": {
-      "filename": "chr20.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr20.fa.gz",
-      "md5": "1d42fbb5014b165373aca053f4f24061",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr21": {
-      "filename": "chr21.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr21.fa.gz",
-      "md5": "184df2bd9b812b6e6b6da16c6021369e",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr22": {
-      "filename": "chr22.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr22.fa.gz",
-      "md5": "41b47ce1cc21b558409c19b892e1c0d1",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr3": {
-      "filename": "chr3.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr3.fa.gz",
-      "md5": "410294b87e71dbd40cf1b98fbadb443b",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr4": {
-      "filename": "chr4.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr4.fa.gz",
-      "md5": "2a54872d6f884b8a993a7aa16db288df",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr5": {
-      "filename": "chr5.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr5.fa.gz",
-      "md5": "69ee0b7e266a45d1b21fd665f917b009",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr6": {
-      "filename": "chr6.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr6.fa.gz",
-      "md5": "fe629afc52a1a06468b60fde0109e32a",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr7": {
-      "filename": "chr7.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr7.fa.gz",
-      "md5": "9c1df22d2a5ce712a410c65fb6e4aeb6",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr8": {
-      "filename": "chr8.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr8.fa.gz",
-      "md5": "44c1556e73628c8ccbaa62ec39bae86a",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chr9": {
-      "filename": "chr9.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr9.fa.gz",
-      "md5": "f7e98217b35f5a7451f1166196b4b33c",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chrX": {
-      "filename": "chrX.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chrX.fa.gz",
-      "md5": "58259f5bd35fe7e16aeec4c24ee02206",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
-    },
-    "chrY": {
-      "filename": "chrY.fa.gz",
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chrY.fa.gz",
-      "md5": "d26954bb71ff5e3b8f794fa4c61bfb15",
-      "license": "GRCh38 genome sequence is freely available for public use; see UCSC credits",
-      "license_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
-      "citation_url": "https://www.ncbi.nlm.nih.gov/grc/human/data"
+    "position": {
+      "release": "GENCODE v32 (Ensembl 98)",
+      "citation_url": "https://www.gencodegenes.org/human/release_32.html",
+      "license": "GENCODE open-access data; EMBL-EBI Terms of Use",
+      "license_url": "https://www.ebi.ac.uk/about/terms-of-use/",
+      "tracks": [
+        "wgEncodeGencodeCompV32",
+        "wgEncodeGencodePseudoGeneV32"
+      ]
     }
   }
 }

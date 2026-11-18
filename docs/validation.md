@@ -1,5 +1,15 @@
 # Local validation
 
+## Regional inputs · 2026-11-18
+
+With Pixi installed and an empty data cache, `pixi run reproduce` transferred
+**6.73 MB** for COTL1 in 12 requests (8 MB limit). A second render ran with
+external networking disabled. The three CSV files and the PNG matched the
+original outputs byte for byte. Provenance matched between the two new runs.
+The Ensembl ID, plus-strand SLC26A4 and an empty interval also passed.
+
+## Earlier releases
+
 Validation date: 2026-11-11. Platform: Ubuntu Linux x86-64, Pixi v0.83.0.
 
 The six synthetic coordinate tests passed. The terminal menu was exercised

@@ -32,8 +32,9 @@ genome-wide specificity or enhancer-to-gene links. See [methods](docs/methods.md
 ## Install and reproduce
 
 Requires **Linux x86-64**, a CPU, **4 GB RAM**, **4 GB free disk** and
-[Pixi](https://pixi.sh/latest/installation/). Internet is needed for installation
-and initial downloads; demo inputs total about 152 MB and are cached for reuse.
+[Pixi](https://pixi.sh/latest/installation/). With the environment installed,
+`pixi run reproduce` downloads **6.73 MB** for COTL1 on its first run (8 MB limit).
+The same command then works offline from `data/raw/`.
 
 ```bash
 git clone https://github.com/eizorerad/guides.git
@@ -43,8 +44,7 @@ pixi run reproduce
 ```
 
 Open **`reports/COTL1-dolcetto.html`** in a browser. Quarto recomputes the
-analysis, tables and figures during rendering. To reproduce the released
-version, run `git checkout v0.2.1` before `pixi install --locked`.
+analysis, tables and figures during rendering.
 
 ## Usage
 
@@ -94,10 +94,9 @@ Run one report at a time; rerunning the same gene and mode replaces its outputs.
 
 All reference inputs are public: Dolcetto/Addgene, GENCODE v32, UCSC GRCh38 and
 ENCODE K562 peaks/cCREs. No cluster account or private data are needed.
-Downloads are MD5-verified and stored read-only in `data/raw/`; raw data,
-generated outputs and environments are excluded from Git. Exact sources,
-versions and terms are in [sources.json](metadata/sources.json), with hashes in
-[checksums.md5](metadata/checksums.md5).
+The library and four peak files have fixed MD5 checksums. Only the requested
+locus is read for gene annotations, DNA and cCREs. The cache records each
+query and SHA-256. See [sources and versions](metadata/sources.json).
 
 Code: [MIT](LICENSE). Documentation and artwork:
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

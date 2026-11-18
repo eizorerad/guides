@@ -58,8 +58,7 @@ def locus_figure(result):
     ax.text(0.01, count + 1.16, "Configured TSS windows", transform=ax.get_yaxis_transform(),
             va="center", fontsize=7, color="0.15")
     genes = result["annotations"]
-    genes = genes[(genes.kind == "gene") & (genes.chrom == gene["chrom"]) &
-                  (genes.start < right) & (genes.end > left)]
+    genes = genes[(genes.start < right) & (genes.end > left)]
     for index, row in enumerate(genes.itertuples()):
         start, end = max(left, row.start), min(right, row.end)
         y = count + 0.1 + (index % 2) * 0.38

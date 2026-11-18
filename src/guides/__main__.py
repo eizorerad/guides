@@ -10,22 +10,28 @@ from pathlib import Path
 
 import requests
 
-from .data import ROOT, SETTINGS, prepare, validate_guides
+from .analysis import analyse
+from .cache import Inputs
+from .data import ROOT, SETTINGS, validate_guides
+from .locus import find_gene
 
 
 def render(gene_name, sequences=None):
     if sequences is not None:
         sequences = validate_guides(sequences)
-    _, _, gene = prepare(gene_name)
+    inputs = Inputs(SETTINGS["demo_max_bytes"])
+    gene, _ = find_gene(gene_name, inputs)
     mode = "dolcetto" if sequences is None else "custom"
     name = f"{gene['gene']}-{mode}"
     output = ROOT / "results" / name
     output.mkdir(parents=True, exist_ok=True)
     request = dict(gene=gene["gene"], sequences=sequences, mode=mode, name=name)
+    if gene_name.upper() != gene["gene"].upper():
+        request["lookup"] = gene_name
     request_path = output / "request.json"
     request_path.write_text(json.dumps(request, indent=2) + "\n")
     print(f"Building report for {gene['gene']} …", flush=True)
-    env = dict(os.environ, GUIDES_REQUEST=str(request_path), QUARTO_PYTHON=sys.executable)
+    env = dict(os.environ, GUIDES_REQUEST=str(request_path), GUIDES_BYTES_READ=str(inputs.used), QUARTO_PYTHON=sys.executable)
     run = subprocess.run(["quarto", "render", "report.qmd", "--output", f"{name}.html"],
                          cwd=ROOT / "reports", env=env, capture_output=True, text=True)
     (output / "render.log").write_text(run.stdout + run.stderr)
@@ -98,7 +104,7 @@ Reports for the same gene and mode are replaced on rerun; run one at a time.""")
         parser.error("--json requires --gene or --reproduce")
     try:
         if args.download:
-            prepare(args.gene or SETTINGS["demo_gene"])
+            analyse({"gene": args.gene or SETTINGS["demo_gene"]}, download_only=True)
         elif args.reproduce or args.gene:
             sequences = args.guides_file.read_text().splitlines() if args.guides_file else args.guides
             with redirect_stdout(sys.stderr if args.json else sys.stdout):

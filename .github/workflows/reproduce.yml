@@ -26,7 +26,10 @@ jobs:
           locked: true   # fail if pixi.lock does not match pixi.toml
 
       - name: Rebuild every result from raw data
-        run: pixi run reproduce
+        run: |
+          pixi run test
+          pixi run reproduce
+          sha256sum --check tests/cotl1.sha256
 
       - name: Committed files must not change when the analysis runs
         run: git status --porcelain && git diff --exit-code
