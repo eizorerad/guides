@@ -13,7 +13,7 @@ also required. Full credit includes being able to explain each choice.
 | Rubric area | Evidence in this repository |
 | --- | --- |
 | Clean-clone reproduction | `pixi install --locked`, then `pixi run reproduce`; the course Reproduce workflow is included. |
-| Organization and data | Raw inputs in ignored `data/raw/`, downloaded by Python, MD5-verified and read-only; fixed URLs and checksums in `metadata/`. Generated figures and tables are ignored. |
+| Organization and data | Read-only inputs in `data/raw/`. File MD5s and regional SHA-256s are checked on reuse. Source versions are in `metadata/`. |
 | Environment | `pixi.toml` and `pixi.lock`; Linux x86-64 is the declared platform. |
 | Automation | Pixi tasks for the menu, download, reproduction and coordinate tests. Scientific settings are in `config/settings.toml`. |
 | Literate report | `reports/report.qmd` recomputes placements, measurements, tables, figure and prose counts on every render; caption, alt text and software versions included. |

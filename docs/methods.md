@@ -1,9 +1,11 @@
 # What the program does
 
-1. Download the fixed Dolcetto, GENCODE and ENCODE files. Select one exact gene
-   symbol or Ensembl gene ID from GENCODE v32 on chr1–22, X or Y.
-2. Download that chromosome's UCSC GRCh38 FASTA file. Search the annotated gene
-   span plus the flanks in `config/settings.toml`.
+1. Resolve the symbol with the Ensembl 98 g:Profiler archive. A UCSC v32
+   transcript position locates the gene. Read its original GENCODE v32 record
+   and transcripts tagged `basic` from JBrowse's indexed annotation.
+2. Read UCSC hg38 DNA for the gene and its configured flanks. Cache the
+   Dolcetto table and four K562 peak files, including the full CTCF track for
+   chromosome-wide nearest-peak distances.
 3. Find exact 20-base spacer matches on both strands. Accept only sites with
    an NGG PAM in the spacer's orientation. The minus-strand PAM is upstream
    on the reference, and its displayed sequence is reverse-complemented.
@@ -17,12 +19,12 @@
    `promoter_bp` records overlap with those windows and keeps its name for
    compatibility with scripts.
 6. Read ENCODE4 K562 cCREs covering the figure and placed guide footprints
-   from the pinned BigBed file, using pyBigWig. Keep source IDs, full boundaries
+   from the UCSC track for this biosample. Keep source IDs, full boundaries
    and biosample-specific class labels. Measure footprint overlap with the
    union of promoter-like and enhancer-like elements separately.
 7. Recompute the tables, descriptive counts and locus figure inside Quarto.
 
-Internal intervals, GTF conversion, `ccres.csv` and `placements.csv` use **0-based,
+Internal intervals, `ccres.csv` and `placements.csv` use **0-based,
 half-open** coordinates. Human-facing `guides.csv` spacer starts and ends use
 **1-based, inclusive** coordinates, as does the report's cCRE table. Distances are base-pair
 differences; spacer-midpoint distances may end in .5. CTCF gap zero means
@@ -73,9 +75,12 @@ bases, for 1201 bases total. Minus-strand windows are reflected on the genomic
 axis. Overlapping transcript windows are counted as a union, not repeatedly.
 
 Only peak *intervals* are drawn. No peak height, motif, knockdown or off-target
-measurement is fabricated. All four ENCODE peak tracks and the cCRE file are required inputs; failed
+measurement is fabricated. All four ENCODE peak tracks and the cCRE track are required inputs; failed
 downloads stop the report instead of being treated as absent biological signal.
 These are reference K562 experiments, not measurements in the user's cells.
+
+Regional SHA-256s cover the cached JSON data. The source URL and query
+are recorded beside each hash in `provenance.json`.
 
 The local exact-match search does not evaluate genome-wide uniqueness,
 mismatches, bulges, non-NGG PAMs, individual genetic variants or alternative
@@ -85,7 +90,7 @@ GENCODE symbol/ID and does not silently substitute a different gene.
 ## Reading the code
 
 - `src/guides/__main__.py`: menu, arguments and Quarto invocation.
-- `src/guides/data.py`: downloads, text parsing and local BigBed queries.
+- `src/guides/cache.py`, `data.py` and `locus.py` read and cache public inputs.
 - `src/guides/analysis.py`: exact placement and interval arithmetic.
 - `src/guides/plot.py`: one Matplotlib figure.
 - `reports/report.qmd`: the executable scientific report.

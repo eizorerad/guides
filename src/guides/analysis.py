@@ -1,11 +1,13 @@
 """Exact local placement and interval measurements; no efficacy prediction."""
 
 import json
+import os
 
 import pandas as pd
 
-from .data import (ROOT, SETTINGS, SOURCES, checksum, library_guides,
-                   prepare, read_ccres, read_peaks, read_sequence, validate_guides)
+from .cache import ROOT, Inputs, checksum
+from .data import SETTINGS, SOURCES, library_guides, read_peaks, validate_guides
+from .locus import find_gene, read_context, read_dna
 
 
 def reverse_complement(sequence):
@@ -40,24 +42,26 @@ def interval_distance(intervals, start, end):
     return min((max(left - end, start - right, 0) for left, right in intervals), default=None)
 
 
-def analyse(request):
-    inputs, annotations, gene = prepare(request["gene"])
+def analyse(request, *, download_only=False):
+    inputs = Inputs(SETTINGS["demo_max_bytes"], int(os.environ.get("GUIDES_BYTES_READ", 0)))
+    gene, tss = find_gene(request.get("lookup", request["gene"]), inputs)
+    if gene["gene"] != SETTINGS["demo_gene"]:
+        inputs.limit = None
+    sequence, search_start, whole = read_dna(gene, inputs)
+    files = {key: inputs.file(key, source) for key, source in SOURCES["files"].items()}
+    if download_only:
+        read_context(gene["chrom"], whole, whole, inputs)
+        return
     sequences = request["sequences"]
     if sequences is None:
-        sequences = library_guides(inputs["library"], gene["gene"])
+        sequences = library_guides(files["library"], gene["gene"])
     sequences = validate_guides(sequences)
-    search_start = max(0, gene["start"] - SETTINGS["search_flank"])
-    search_end = gene["end"] + SETTINGS["search_flank"]
-    sequence = read_sequence(inputs["reference"], search_start, search_end)
     search_end = search_start + len(sequence)
-    transcripts = annotations[(annotations.gene_id == gene["gene_id"]) &
-                              (annotations.kind == "transcript")]
-    tss = sorted(set(transcripts.start if gene["strand"] == "+" else transcripts.end - 1))
     upstream, downstream = SETTINGS["promoter_upstream"], SETTINGS["promoter_downstream"]
     # Configured TSS windows, not experimentally annotated regulatory elements.
     promoters = [(t - upstream, t + downstream + 1) if gene["strand"] == "+" else
                  (t - downstream, t + upstream + 1) for t in tss]
-    tracks = {key: read_peaks(inputs[key], gene["chrom"]) for key in SOURCES["tracks"]}
+    tracks = {key: read_peaks(files[key], gene["chrom"]) for key in SOURCES["tracks"]}
     rows, alternatives = [], []
     for index, spacer in enumerate(sequences, 1):
         label = f"g{index}"
@@ -90,7 +94,8 @@ def analyse(request):
     left = int(placed.start.min()) - 1 if len(placed) else centre
     right = int(placed.end.max()) if len(placed) else centre + 1
     view = (max(0, left - SETTINGS["plot_flank"]), right + SETTINGS["plot_flank"])
-    ccres = read_ccres(inputs["ccre"], gene["chrom"], max(0, min(view[0], left - 3)), max(view[1], right + 3))
+    interval = (min(view[0], left - 3), max(view[1], right + 3))
+    annotations, ccres = read_context(gene["chrom"], interval, whole, inputs)
     table[["ccre_ids", "ccre_classes", "ccre_promoter_bp", "ccre_enhancer_bp"]] = pd.NA
     for row in placed.itertuples():
         start, end = (row.start - 1, row.end + 3) if row.strand == "+" else (row.start - 4, row.end)
@@ -107,12 +112,8 @@ def analyse(request):
     table.to_csv(output / "guides.csv", index=False)
     pd.DataFrame(alternatives, columns=["guide", "start", "end", "strand", "pam"]).to_csv(
         output / "placements.csv", index=False)
-    used_sources = []
-    for key, path in inputs.items():
-        source = SOURCES["chromosomes"][gene["chrom"]] if key == "reference" else SOURCES["files"][key]
-        used_sources.append(dict(source, key=key, sha256=checksum(path, "sha256")))
     manifest = dict(request=request, settings=SETTINGS, gene=gene,
-                    search_interval=[search_start, search_end], plot_interval=list(view), sources=used_sources,
+                    search_interval=[search_start, search_end], plot_interval=list(view), sources=list(inputs.sources.values()),
                     environment_sha256=checksum(ROOT / "pixi.lock", "sha256"))
     (output / "provenance.json").write_text(json.dumps(manifest, indent=2) + "\n")
     return dict(table=table, gene=gene, annotations=annotations, tss=tss, promoters=promoters,
