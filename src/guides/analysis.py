@@ -5,7 +5,7 @@ import os
 
 import pandas as pd
 
-from .cache import ROOT, Inputs, checksum
+from .cache import ROOT, Inputs, sha256
 from .data import SETTINGS, SOURCES, library_guides, read_peaks, validate_guides
 from .locus import find_gene, read_context, read_dna
 
@@ -114,7 +114,7 @@ def analyse(request, *, download_only=False):
         output / "placements.csv", index=False)
     manifest = dict(request=request, settings=SETTINGS, gene=gene,
                     search_interval=[search_start, search_end], plot_interval=list(view), sources=list(inputs.sources.values()),
-                    environment_sha256=checksum(ROOT / "pixi.lock", "sha256"))
+                    environment_sha256=sha256((ROOT / "pixi.lock").read_bytes()))
     (output / "provenance.json").write_text(json.dumps(manifest, indent=2) + "\n")
     return dict(table=table, gene=gene, annotations=annotations, tss=tss, promoters=promoters,
                 tracks=tracks, ccres=ccres, view=view, output=output, manifest=manifest)

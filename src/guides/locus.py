@@ -12,12 +12,20 @@ REGIONS = SOURCES["regions"]
 PRIMARY = {f"chr{i}" for i in range(1, 23)} | {"chrX", "chrY"}
 
 
-def ucsc_url(endpoint, params):
-    return f"{SOURCES['ucsc_api']}/{endpoint}?" + urlencode(dict(genome="hg38", **params))
+def ucsc(inputs, key, endpoint, field, limit, *, cached_interval=None, **params):
+    base = f"{SOURCES['ucsc_api']}/{endpoint}?"
+    query = dict(genome="hg38", **params)
+    if cached_interval:
+        broad = dict(query, start=cached_interval[0], end=cached_interval[1])
+        cached = (p for p in (query, broad) if query_path(base + urlencode(p)).is_file())
+        query = next(cached, query)
+    return inputs.json(key, REGIONS[key], base + urlencode(query), field, limit, query)
 
 
-def ucsc(inputs, key, endpoint, field, limit, **params):
-    return inputs.json(key, REGIONS[key], ucsc_url(endpoint, params), field, limit, dict(genome="hg38", **params))
+def only(items, description):
+    if len(items) != 1:
+        raise ValueError(f"Expected one {description}; found {len(items)}.")
+    return next(iter(items))
 
 
 def gene_anchor(groups, stable_id):
@@ -28,47 +36,48 @@ def gene_anchor(groups, stable_id):
             gid = hit["posName"]
             chrom, span = hit["position"].split(":")
             if gid.split(".")[0] == stable_id and chrom in PRIMARY:
-                anchors[gid, chrom] = int(span.split("-")[0].replace(",", "")) - 1
-    if len(anchors) != 1:
-        raise ValueError(f"Expected one GENCODE v32 locus for {stable_id}; found {len(anchors)}.")
-    (gid, chrom), pos = anchors.popitem()
-    return gid, chrom, pos
+                start = int(span.split("-")[0].replace(",", "")) - 1
+                anchors[gid, chrom] = (gid, chrom, start)
+    return only(anchors.values(), f"GENCODE v32 locus for {stable_id}")
 
 
 def annotation(inputs, chrom, left, right):
     source = REGIONS["annotation"]
-    root = source["url"].format(chrom=chrom)
     params = dict(chrom=chrom, start=left, end=right)
     def read(file, field=None):
-        return inputs.json("annotation", source, root + file, field, 5_000_000, params)
+        return inputs.json("annotation", source, source["url"].format(chrom=chrom) + file, field, 5_000_000, params)
 
     index = read("trackData.jsonz", "intervals")
     def fields(row):
         return dict(zip(index["classes"][row[0]]["attributes"], row[1:]))
 
-    def genes(rows):
+    def overlapping(rows):
         for row in rows:
             item = fields(row)
             if item["Start"] >= right or item["End"] <= left:
                 continue
             if row[0] == index["lazyClass"]:
-                chunk = index["urlTemplate"].replace("{Chunk}", str(item["Chunk"]))
-                yield from genes(read(chunk))
+                yield from overlapping(read(index["urlTemplate"].format_map(item)))
             elif item.get("Type") == "gene":
-                gene = dict(gene=item["Gene_name"], gene_id=item["Gene_id"], chrom=chrom,
-                            start=item["Start"], end=item["End"], strand="+" if item["Strand"] == 1 else "-", kind="gene")
-                transcripts = map(fields, item.get("Subfeatures", []))
-                tss = set()
-                for tx in transcripts:
-                    tags = tx.get("Tag", [])
-                    if tx.get("Type") == "transcript" and (tags == "basic" or isinstance(tags, list) and "basic" in tags):
-                        tss.add(tx["Start"] if gene["strand"] == "+" else tx["End"] - 1)
-                if tss:
-                    yield gene, sorted(tss)
-            # Overlapping genes can be nested independently of biological parentage.
+                yield item
+            # The index can nest independent genes in a Sublist.
             if isinstance(row[-1], dict):
-                yield from genes(row[-1].get("Sublist", []))
-    return list(genes(index["nclist"]))
+                yield from overlapping(row[-1].get("Sublist", []))
+
+    genes = []
+    for item in overlapping(index["nclist"]):
+        plus = item["Strand"] == 1
+        tss = set()
+        for tx in map(fields, item.get("Subfeatures", [])):
+            tags = tx.get("Tag")
+            basic = "basic" in tags if isinstance(tags, list) else tags == "basic"
+            if tx.get("Type") == "transcript" and basic:
+                tss.add(tx["Start"] if plus else tx["End"] - 1)
+        if tss:
+            gene = dict(gene=item["Gene_name"], gene_id=item["Gene_id"], chrom=chrom,
+                        start=item["Start"], end=item["End"], strand="+" if plus else "-", kind="gene")
+            genes.append((gene, sorted(tss)))
+    return genes
 
 
 def find_gene(name, inputs):
@@ -79,18 +88,13 @@ def find_gene(name, inputs):
         body = dict(organism="hsapiens", target="ENSG", query=[name])
         rows = inputs.json("lookup", source, source["url"], "result", 32_000, body, body)
         ids = {r["converted"] for r in rows if (r["name"] or "").upper() == name and r["converted"].startswith("ENSG")}
-        if len(ids) != 1:
-            raise ValueError(f"Expected one Ensembl 98 ID for {name!r}; found {len(ids)}. Use its Ensembl gene ID.")
-        stable_id = ids.pop()
-    source = REGIONS["position"]
+        stable_id = only(ids, f"Ensembl 98 ID for {name!r} (try its Ensembl gene ID)")
     groups = ucsc(inputs, "position", "search", "positionMatches", 600_000,
-                  search=stable_id, categories=",".join(source["tracks"]))
+                  search=stable_id, categories=",".join(REGIONS["position"]["tracks"]))
     gid, chrom, pos = gene_anchor(groups, stable_id)
     matches = [(g, tss) for g, tss in annotation(inputs, chrom, pos, pos + 1)
                if g["gene_id"] == gid and (name == stable_id or g["gene"].upper() == name)]
-    if len(matches) != 1:
-        raise ValueError(f"Expected one matching GENCODE v32 basic gene for {name!r}; found {len(matches)}.")
-    return matches[0]
+    return only(matches, f"matching GENCODE v32 basic gene for {name!r}")
 
 
 def read_dna(gene, inputs):
@@ -110,12 +114,9 @@ def read_context(chrom, interval, whole, inputs):
     genes = [g for g, _ in annotation(inputs, chrom, left, right)]
     neighbors = pd.DataFrame(genes, columns=["gene", "strand", "start", "end"]).sort_values("start", kind="stable")
     track = REGIONS["ccre"]["track"]
-    params = dict(track=track, chrom=chrom, start=left, end=right)
-    broad = dict(params, start=whole[0], end=whole[1])
-    # An explicit --download can also supply cCREs for any custom guide set.
-    if not query_path(ucsc_url("getData/track", params)).exists() and query_path(ucsc_url("getData/track", broad)).exists():
-        params = broad
-    rows = ucsc(inputs, "ccre", "getData/track", track, 4_000_000, **params)
+    # --download may already have cached the full locus for custom guides.
+    rows = ucsc(inputs, "ccre", "getData/track", track, 4_000_000,
+                track=track, chrom=chrom, start=left, end=right, cached_interval=whole)
     ccres = pd.DataFrame(rows, columns=["chrom", "chromStart", "chromEnd", "name", "cCRE_class"])
     ccres.columns = ["chrom", "start", "end", "accession", "cCRE_class"]
     return neighbors, ccres[(ccres.start < right) & (ccres.end > left)]

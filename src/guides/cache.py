@@ -23,11 +23,6 @@ def sha256(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def checksum(path, algorithm="sha256"):
-    with path.open("rb") as handle:
-        return hashlib.file_digest(handle, algorithm).hexdigest()
-
-
 def save(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
     with TemporaryDirectory(dir=path.parent) as tmp:
@@ -41,11 +36,27 @@ def query_path(url, body=None):
     return RAW / "regions" / (sha256(canonical([url, body])) + ".json")
 
 
-def direct_response(response, *args, **kwargs):
-    # Requests would otherwise read a redirect body before we can apply the byte limit.
-    if 300 <= response.status_code < 400:
+def require_ok(response, *args, **kwargs):
+    # Run before Requests can follow a redirect or read its body.
+    if response.status_code != 200:
         response.close()
-        raise ValueError(f"Unexpected redirect: {response.url}")
+        raise ValueError(f"HTTP {response.status_code}: {response.url}")
+
+
+def response_data(reply, field, params, url):
+    if field is None:
+        return reply  # JBrowse chunks are lists.
+    if not isinstance(reply, dict):
+        raise ValueError(f"Expected a JSON object from {url}")
+    coordinates = ("genome", "chrom", "start", "end", "track") if "genome" in params else ()
+    if any(reply.get(k) != params[k] for k in coordinates if k in params):
+        raise ValueError(f"Unexpected coordinates or track in response from {url}")
+    data = reply.get(field, [] if field == "positionMatches" else None)
+    if data is None:
+        raise ValueError(f"Missing {field} in response from {url}")
+    if field == "dna" and (not isinstance(data, str) or len(data) != params["end"] - params["start"]):
+        raise ValueError(f"Incomplete GRCh38 sequence from {url}")
+    return data
 
 
 class Inputs:
@@ -57,76 +68,60 @@ class Inputs:
     def fetch(self, url, limit, body=None):
         if self.limit is not None:
             limit = min(limit, self.limit - self.used)
+        too_large = f"Download exceeds the {limit:,}-byte limit: {url}"
+        if limit <= 0:
+            raise ValueError(too_large)
         headers = {"Accept": "application/json, */*", "Accept-Encoding": "identity"}
-        method = "POST" if body else "GET"
+        method = "GET" if body is None else "POST"
         with requests.request(method, url, json=body, headers=headers, stream=True, timeout=45,
-                              allow_redirects=False, hooks={"response": direct_response}) as response:
-            response.raise_for_status()
-            if response.status_code == 206:
-                raise ValueError(f"Incomplete response from {url}")
-            size = response.headers.get("Content-Length")
-            too_large = f"Download exceeds the {limit:,}-byte limit: {url}"
-            if limit <= 0 or (size is not None and int(size) > limit):
+                              allow_redirects=False, hooks={"response": require_ok}) as response:
+            size = int(response.headers.get("Content-Length", -1))
+            if size > limit:
                 raise ValueError(too_large)
-            # Bound the actual HTTP body, including replies without Content-Length.
+            encoding = response.headers.get("Content-Encoding", "identity").lower()
+            if encoding not in {"identity", "gzip", "x-gzip"}:
+                raise ValueError(f"Unexpected HTTP encoding {encoding!r}: {url}")
             try:
                 wire = response.raw.read(limit, decode_content=False)
-            except HTTPError as error:
-                raise ValueError(f"Interrupted download: {url}") from error
-            if size is not None and len(wire) != int(size):
+                data = wire if encoding == "identity" else gzip.GzipFile(fileobj=BytesIO(wire)).read(limit + 1)
+            except (HTTPError, EOFError, OSError, zlib.error) as error:
+                raise ValueError(f"Invalid {encoding} response: {url}") from error
+            if size >= 0 and len(wire) != size:
                 raise ValueError(f"Incomplete download: {url}")
-            if size is None and len(wire) == limit and not response.raw.isclosed():
-                raise ValueError(too_large)
-            data = wire
-            encoding = response.headers.get("Content-Encoding", "identity").lower()
-            if encoding in {"gzip", "x-gzip"}:
-                try:
-                    with gzip.GzipFile(fileobj=BytesIO(wire)) as stream:
-                        data = stream.read(limit + 1)
-                except (EOFError, OSError, zlib.error) as error:
-                    raise ValueError(f"Invalid gzip response: {url}") from error
-            elif encoding != "identity":
-                raise ValueError(f"Unexpected HTTP encoding {encoding!r}: {url}")
-            if len(data) > limit:
+            if len(data) > limit or (size < 0 and len(wire) == limit and not response.raw.isclosed()):
                 raise ValueError(too_large)
             self.used += max(len(wire), len(data))
             return data
 
     def file(self, key, source):
         path = RAW / source["filename"]
-        if not path.exists():
-            print(f"Downloading {path.name} …", flush=True)
+        cached = path.is_file()
+        if cached:
+            with path.open("rb") as stream:
+                data = stream.read(source["bytes"] + 1)
+        else:
             data = self.fetch(source["url"], source["bytes"] + 1)
-            if hashlib.md5(data).hexdigest() != source["md5"]:
-                raise ValueError(f"Download checksum mismatch: {path.name}")
+        if hashlib.md5(data).hexdigest() != source["md5"]:
+            raise ValueError(f"Checksum mismatch: {path}. Remove it and retry.")
+        if not cached:
             save(path, data)
-        if checksum(path, "md5") != source["md5"]:
-            raise ValueError(f"Changed raw file: {path}. Remove it and download again.")
-        self.sources[path] = dict(source, key=key, sha256=checksum(path))
+        self.sources[path] = dict(source, key=key, sha256=sha256(data))
         return path
 
     def json(self, key, source, url, field, limit, params, body=None):
         path = query_path(url, body)
-        if path.exists():
+        cached = path.is_file()
+        if cached:
             record = json.loads(path.read_bytes())
-            data = record.get("data")
-            valid_query = record.get("url") == url and record.get("body") == body
-            if not valid_query or record.get("sha256") != sha256(canonical(data)):
-                raise ValueError(f"Cached response checksum mismatch: {path}. Remove it and retry.")
+            data = record.get("data") if isinstance(record, dict) else None
         else:
-            reply = json.loads(self.fetch(url, limit, body))
-            if "genome" in params:  # Check that UCSC answered for the requested assembly and interval.
-                if any(reply.get(k) != v for k, v in params.items() if k in {"genome", "chrom", "start", "end", "track"}):
-                    raise ValueError(f"Unexpected coordinates or track in response from {url}")
-                if field == "positionMatches":
-                    reply.setdefault(field, [])
-            if field is not None and field not in reply:
-                raise ValueError(f"Missing {field} in response from {url}")
-            data = reply if field is None else reply[field]
-            if field == "dna" and len(data) != params["end"] - params["start"]:
-                raise ValueError(f"Incomplete GRCh38 sequence from {url}")
-            record = dict(url=url, body=body, data=data, sha256=sha256(canonical(data)))
-            save(path, canonical(record))
+            data = response_data(json.loads(self.fetch(url, limit, body)), field, params, url)
+        digest = sha256(canonical(data))
+        expected = dict(url=url, body=body, sha256=digest)
+        if not cached:
+            save(path, canonical(dict(expected, data=data)))
+        elif not isinstance(record, dict) or any(record.get(k) != v for k, v in expected.items()):
+            raise ValueError(f"Cached response checksum mismatch: {path}. Remove it and retry.")
         self.sources[path] = dict(source, key=key, url=url, query=params,
-                                  filename=str(path.relative_to(RAW)), sha256=record["sha256"])
+                                  filename=str(path.relative_to(RAW)), sha256=digest)
         return data

@@ -3,7 +3,6 @@ title: "CRISPRi guide context"
 author: "Leonid Klarov"
 format:
   html:
-    theme: cosmo
     toc: true
     embed-resources: true
 jupyter: python3
